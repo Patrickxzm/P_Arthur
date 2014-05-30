@@ -1,0 +1,144 @@
+#!/bin/sh
+# P_Arthur.install
+# Install P_Arthur package and its dependencies.
+#
+prefix=`echo $* | grep "\-\-prefix=" | sed -e "s/^.*--prefix=\([^ ]*\).*$/\1/"`
+if [ -z $prefix ]
+then
+	prefix="$HOME/local"
+fi
+
+softwaredir=$HOME/software
+workshopdir=$HOME/Workshop
+topbuilddir=$prefix/build
+if test ! -d $topbuilddir; then
+	echo "create build directory $topbuilddir"
+	mkdir -p $topbuilddir
+fi
+
+for arg in $*
+do
+	part=`echo $arg | grep "^[^-]"`
+	if [ -z $part ]; then
+		continue;
+	fi
+	if [ $part = "mysql" ]; then
+		echo "Install/Update mysql-5.1.32 ... "
+		mkdir -p $topbuilddir/mysql
+		cd $topbuilddir/mysql || exit -1
+		if [ ! -d $softwaredir/mysql-5.1.32 ]; then
+			tar -xzf $softwaredir/mysql-5.1.32.tar.gz -C $softwaredir
+		fi
+		$softwaredir/mysql-5.1.32/configure || exit -2
+		if make && sudo make install; then
+			echo "OK"
+			sudo /sbin/ldconfig
+			rm -rf $softwaredir/mysql-5.1.32
+		else
+			echo "Failed"
+			exit -1
+		fi
+	elif [ $part = "unp" ] ; then
+		echo "Install unp(unix network programming) package."
+		cd $topbuilddir && tar -xzf $softwaredir/unp.tgz;
+		cd $topbuilddir/unp && ./configure && make -C lib #&& make -C libroute
+		if test -f $topbuilddir/unp/libunp.a; then
+			if [ ! -d $prefix/include ]
+			then
+				mkdir -p $prefix/include
+			fi
+			if [ ! -d $prefix/lib ]
+			then
+				mkdir -p $prefix/lib
+			fi
+			ln -s $topbuilddir/unp $prefix/include/unp
+			ln -s $topbuilddir/unp/libunp.a $prefix/lib/libunp.a
+		else
+			echo "Install unp failed"
+			exit -4
+		fi
+	elif [ $part = "flex" ] ; then 
+		echo "Install/Update flex to 2.5.35"
+		mkdir -p $topbuilddir/flex
+		cd $topbuilddir/flex || exit -9
+		$softwaredir/flex-2.5.35/configure || exit -10
+		make && sudo make install
+		sudo /sbin/ldconfig
+	elif [ $part = "libxml2" ] ; then 
+		echo "Install/Update libxml2 to 2.7.8 ... "
+		rm -rf $topbuilddir/libxml2
+		mkdir -p $topbuilddir/libxml2
+		cd $topbuilddir/libxml2 || exit -3
+		if [ ! -d $softwaredir/libxml2-2.7.8 ]
+		then
+			if [ ! -f $softwaredir/libxml2-2.7.8.tar.gz ]
+			then
+				echo "package libxml2-2.7.8 not found."
+				exit -5
+			fi
+			tar -xzf $softwaredir/libxml2-2.7.8.tar.gz -C $softwaredir
+		fi
+		$softwaredir/libxml2-2.7.8/configure || exit -4
+		make && sudo make install || exit -11
+		sudo /sbin/ldconfig
+	elif [ $part = "mysql++" ] ; then
+		echo "Install/Update mysql++ to 3.0.8" 
+		if cd $prefix/build && tar -xzf ~/software/mysql++-3.0.8.tar.gz\
+		    && cd mysql++-3.0.8; then
+			: #echo "Entering directory mysql++-3.0.8"
+		else
+			echo "Can not enter directory mysql++-3.0.8"
+			exit -2;
+		fi
+		if ./configure --prefix=$prefix && make install; then
+		   	sudo /sbin/ldconfig
+			echo "OK"
+		else
+			echo "Failed"
+			exit -3
+		fi
+	elif [ $part = "python" ]; then 
+		echo "Install/Update python to 2.7.1"
+		cd $topbuilddir && tar -xzf $softwaredir/Python-2.7.1.tgz || exit -12
+		cd $topbuilddir/Python-2.7.1 && ./configure || exit -13
+		make && sudo make install || exit -11
+		sudo /sbin/ldconfig
+	else
+		echo "$part: Unknown package name to install."
+		exit -5
+	fi
+	if [ $dependencies ]; then
+		dependencies="$dependencies $part"
+	else
+		dependencies=$part
+	fi
+done
+
+if [ "$dependencies" ] ; then 
+	echo "Install dependenci(es) \"$dependencies\" Done."
+	exit
+fi
+
+builddir=$topbuilddir/P_Arthur
+srcdir=$HOME/Workshop/P_Arthur
+if test ! -d $builddir; 
+then 
+	mkdir -p $builddir
+fi
+if ! cd $builddir;
+then
+	exit -5
+fi
+if test ! -f $builddir/Makefile
+then
+	hash -r 
+	if ! $srcdir/configure --prefix=$prefix --enable-debug
+	then
+		exit -6
+	fi
+fi
+if ! make -C $builddir install
+then 
+	exit -7
+fi
+

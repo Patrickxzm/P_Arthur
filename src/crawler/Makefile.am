@@ -1,0 +1,46 @@
+crawlerdir = $(top_srcdir)/src/crawler
+crawlerhdir = $(includedir)/pa/crawler
+bin_PROGRAMS += host_crawler envhost_t scheduler_t check_host raw_filter task2url outlinks 
+bin_PROGRAMS += mosquito.parser_t
+bin_SCRIPTS += $(crawlerdir)/insert_fail_candidate.sed $(crawlerdir)/insert_OK_candidate.sed $(crawlerdir)/update_inlinks.sed $(crawlerdir)/reset_host.awk $(crawlerdir)/guard.sh
+bin_SCRIPTS += $(crawlerdir)/outlinks.11272010.trans.sed
+check_PROGRAMS += raw2link index_link link2list 
+
+crawlerh_HEADERS = $(crawlerdir)/mosquito.h 
+#crawlerh_HEADERS += $(crawlerdir)/urlque.h 
+crawlerh_HEADERS += $(crawlerdir)/common.h 
+crawlerh_HEADERS += $(crawlerdir)/task_stream.h 
+crawlerh_HEADERS += $(crawlerdir)/task.h 
+crawlerh_HEADERS += $(crawlerdir)/shadow_chain.h 
+crawlerh_HEADERS += $(crawlerdir)/page_status.h 
+
+libpa_a_SOURCES += $(crawlerh_HEADERS)
+libpa_a_SOURCES += $(crawlerdir)/shadow_chain.cpp 
+libpa_a_SOURCES += $(crawlerdir)/shadow_chain.h 
+libpa_a_SOURCES += $(crawlerdir)/mosquito.cpp 
+libpa_a_SOURCES += $(crawlerdir)/mosquito.h 
+#libpa_a_SOURCES += $(crawlerdir)/urlque.cpp 
+libpa_a_SOURCES += $(crawlerdir)/urlque.h 
+libpa_a_SOURCES += $(crawlerdir)/common.cpp 
+libpa_a_SOURCES += $(crawlerdir)/common.h 
+libpa_a_SOURCES += $(crawlerdir)/robots.h 
+libpa_a_SOURCES += $(crawlerdir)/robots.cpp 
+libpa_a_SOURCES += $(crawlerdir)/task.h 
+libpa_a_SOURCES += $(crawlerdir)/task.cpp 
+libpa_a_SOURCES += $(crawlerdir)/task_stream.cpp 
+libpa_a_SOURCES += $(crawlerdir)/task_stream.h 
+libpa_a_SOURCES += $(crawlerdir)/host4import.cpp 
+libpa_a_SOURCES += $(crawlerdir)/host4import.h 
+libpa_a_SOURCES += $(crawlerdir)/page_status.h 
+
+host_crawler_SOURCES = $(crawlerdir)/host_crawler.cpp
+envhost_t_SOURCES = $(crawlerdir)/envhost_t.cpp $(crawlerdir)/envhost.cpp $(crawlerdir)/envhost.h $(crawlerdir)/scheduler.cpp $(crawlerdir)/scheduler.h
+scheduler_t_SOURCES = $(crawlerdir)/scheduler_t.cpp $(crawlerdir)/scheduler.cpp $(crawlerdir)/scheduler.h $(crawlerdir)/envhost.cpp $(crawlerdir)/envhost.h
+check_host_SOURCES = $(crawlerdir)/check_host.cpp
+raw_filter_SOURCES = $(crawlerdir)/raw_filter.cpp
+raw2link_SOURCES = $(crawlerdir)/raw2link.cpp $(crawlerdir)/links.cpp $(crawlerdir)/links.h
+index_link_SOURCES = $(crawlerdir)/index_link.cpp $(crawlerdir)/links.cpp $(crawlerdir)/links.h
+link2list_SOURCES = $(crawlerdir)/link2list.cpp $(crawlerdir)/links.h $(crawlerdir)/links.cpp
+task2url_SOURCES = $(crawlerdir)/task2url.cpp
+outlinks_SOURCES = $(crawlerdir)/outlinks.cpp
+mosquito_parser_t_SOURCES = $(crawlerdir)/mosquito.parser_t.cpp

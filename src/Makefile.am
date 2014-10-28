@@ -1,4 +1,5 @@
 ## Makefile.am 
+AUTOMAKE_OPTIONS = subdir-objects
 #INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)
 noinst_PROGRAMS = 
 check_PROGRAMS =

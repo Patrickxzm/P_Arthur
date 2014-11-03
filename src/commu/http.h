@@ -6,7 +6,6 @@
 #include "http_reply.h"
 //#include "url/xhostfilter.h"
 #include <sstream>
-#include <ext/rope>
 #include <fstream>
 /*
  * For compatibility with old version of this package, this interface is 

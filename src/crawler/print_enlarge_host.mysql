@@ -1,0 +1,5 @@
+SELECT name, schedule_time, visited_size, visited_capacity
+from host
+WHERE visited_size + page_wanted*2 > visited_capacity and crawler is NULL
+LIMIT 64;
+

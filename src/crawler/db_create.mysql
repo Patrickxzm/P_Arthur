@@ -1,0 +1,83 @@
+CREATE TABLE IF NOT EXISTS site (
+  ID INT UNSIGNED NOT NULL AUTO_INCREMENT KEY,
+  name VARCHAR(64) NOT NULL,
+  host_num INT UNSIGNED NOT NULL DEFAULT 0,   
+  max_host_num INT UNSIGNED NOT NULL DEFAULT 0,
+  UNIQUE INDEX (name)
+);
+DESC site;
+
+create table IF NOT EXISTS host (   
+  ID INT UNSIGNED NOT NULL AUTO_INCREMENT KEY,
+  name VARCHAR(64) NOT NULL,
+  port INT UNSIGNED NOT NULL DEFAULT 80,
+  siteID INT UNSIGNED,
+  page_num INT UNSIGNED NOT NULL DEFAULT 0,
+  sum_page_num INT UNSIGNED NOT NULL DEFAULT 0, 
+  zip_root MEDIUMBLOB,
+  special_branch TEXT,	 # "disallow:" to get rid of trap branch, 
+                         #"allow:" to overwrite "robots.txt"
+  cookies TEXT,
+  towait_hour INT DEFAULT 4, 
+  schedule_time DATETIME,
+  refresh_num INT UNSIGNED NOT NULL DEFAULT 0,
+  rotate_num INT UNSIGNED NOT NULL DEFAULT 0,
+  page_wanted INT UNSIGNED NOT NULL DEFAULT 300,
+  page_interval INT DEFAULT 3,
+  crawler VARCHAR(40),
+  load_time DATETIME,
+  failure_time DATETIME,
+  failure_num INT UNSIGNED NOT NULL DEFAULT 0,
+  last_modified TIMESTAMP,
+  INDEX (schedule_time),
+  INDEX (crawler),
+  UNIQUE INDEX (name, port),
+  FOREIGN KEY (siteID) REFERENCES site(ID)
+);
+DESC host;
+
+CREATE TABLE IF NOT EXISTS candidate (
+  ID INT UNSIGNED NOT NULL AUTO_INCREMENT KEY,
+  host VARCHAR(64) NOT NULL,
+  port INT UNSIGNED NOT NULL DEFAULT 80,
+  site VARCHAR(64),
+  chk ENUM('OK', 'fail'),
+  inlinks INT UNSIGNED NOT NULL DEFAULT 0,
+  ipaddr CHAR(20),
+  reason VARCHAR(50),
+  remarks VARCHAR(80),
+  last_modified TIMESTAMP,
+  UNIQUE INDEX (host, port)
+);
+DESC candidate;
+
+CREATE TABLE IF NOT EXISTS trans_link (
+  source INT UNSIGNED NOT NULL,
+  target INT UNSIGNED NOT NULL,
+  PRIMARY KEY (source, target),
+  FOREIGN KEY (source) REFERENCES host(ID),
+  FOREIGN KEY (target) REFERENCES host(ID)
+);
+DESC trans_link;
+
+CREATE TABLE IF NOT EXISTS crawler (
+  ID INT UNSIGNED NOT NULL AUTO_INCREMENT KEY,
+  name VARCHAR(40) ,
+  ProcessQuota INT NOT NULL DEFAULT 0,
+  remarks VARCHAR(80),
+  last_modified TIMESTAMP,
+  UNIQUE INDEX (name)
+);
+DESC crawler;
+
+CREATE TABLE IF NOT EXISTS memory (
+  ID INT UNSIGNED NOT NULL AUTO_INCREMENT KEY,
+  hostID INT UNSIGNED NOT NULL,
+  capacity INT UNSIGNED NOT NULL,   # <640K
+  size INT UNSIGNED NOT NULL, # zero size means useless. 
+  shadow MEDIUMBLOB,
+  create_time DATETIME,
+  last_modified TIMESTAMP,
+  FOREIGN KEY (hostID) REFERENCES host(ID) ON DELETE CASCADE
+);
+DESC memory;

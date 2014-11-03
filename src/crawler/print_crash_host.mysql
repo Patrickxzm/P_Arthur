@@ -1,0 +1,3 @@
+select name, crawler, load_time, schedule_time, towait_hour, last_modified from host 
+WHERE load_time+INTERVAL 10 HOUR<NOW() AND crawler is not NULL 
+LIMIT 64;

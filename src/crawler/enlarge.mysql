@@ -1,0 +1,6 @@
+UPDATE host SET 
+   visited_shadow=NULL, visited_size=0, visited_capacity=IF(visited_capacity*10>4000000, 4000000, visited_capacity*10)
+   , sum_page_num=sum_page_num+page_num, page_num=0
+   , zip_root=NULL
+   , refresh_num=0, rotate_num=rotate_num+1
+WHERE visited_size + page_wanted*2 > visited_capacity and crawler is NULL;

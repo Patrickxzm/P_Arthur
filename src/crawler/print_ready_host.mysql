@@ -1,0 +1,4 @@
+select name from host 
+WHERE schedule_time<now() AND crawler is NULL 
+AND visited_size+2*page_wanted<=visited_capacity 
+LIMIT 64;

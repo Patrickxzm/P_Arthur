@@ -1,7 +1,7 @@
 AC_DEFUN([AC_CHECK_VERSION],
 [
 	qualify="yes"
-	VERSION=`$1 --version|sed "s/[[^0-9]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\)/\1\.\2.\3/"`
+	VERSION=`$1 --version|sed "s/[[^0-9]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*/\1\.\2.\3/"`
 	AC_MSG_CHECKING([for the version of program $1 ])
 	for i in 1 2 3; do
  		select_string="s/[[^0-9]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\)/\\$i/"

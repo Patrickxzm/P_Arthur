@@ -1,8 +1,10 @@
 #include "charset.h"
 #include "util.h"
 #include <iconv.h>
+#include <cstdlib>
 #include <errno.h>
 #include <assert.h>
+#include <cstring>
 
 namespace {
 	const char* encoding_list[] = {
@@ -89,3 +91,74 @@ CIconvTester::try_encode(const char* encoding)
 	}
 	return "";
 }
+
+wstring
+wc1(const string &in, const char *locale)
+{
+	setlocale(LC_CTYPE, locale);
+	wchar_t buf[in.size()+1];
+	mbstowcs(buf, in.c_str(), in.size()+1);
+	return buf;
+}
+
+string
+iconv_str(const char* from, const char* to, const string &in)
+{
+    string out, errmsg;
+    if (size_t(-1) == convert_charset(from, to, in, out, errmsg))
+        return errmsg;
+    return out;
+}
+
+size_t
+convert_charset(const char* from, const char* to, const string &in
+     , string &out, string& errmsg)
+{
+    iconv_t env;
+    env = iconv_open(to, from);
+    char* pin = (char*)in.c_str();
+    size_t leftIn = in.size();
+    size_t leftOut = leftIn * 4;
+    char buffer[leftOut];
+    char* pout = buffer;
+    size_t result = iconv(env, &pin, &leftIn, &pout, &leftOut);
+    if (size_t(-1) == result)
+        errmsg = strerror(errno);
+    else
+        out = string(buffer, pout - buffer);
+    iconv_close(env);
+    return result;
+}
+
+wstring 
+wc(const char* mb_code, const string& in, const char* wc_code)
+{
+	size_t result;
+	iconv_t env;
+	env = iconv_open(wc_code, mb_code);
+	char* pin = (char*)in.c_str();
+	size_t leftIn = in.size();
+	wchar_t wcs[leftIn];
+	char* pout = (char*)wcs;
+	size_t leftOut = sizeof(wcs);
+	result = iconv(env, &pin, &leftIn, &pout, &leftOut);
+	iconv_close(env);
+	return wstring(wcs, (sizeof(wcs) - leftOut)/sizeof(wchar_t));
+}
+
+string 
+mb(const char* mb_code, const wstring& in, const char* wc_code)
+{
+	size_t result;
+	iconv_t env;
+	env = iconv_open(mb_code, wc_code);
+	char* pin = (char*)in.c_str();
+	size_t leftIn = in.size() * sizeof(wchar_t);
+	size_t leftOut = leftIn;
+	char outBuf[leftOut];
+	char* pout = outBuf;
+	result = iconv(env, &pin, &leftIn, &pout, &leftOut);
+	iconv_close(env);
+	return string(outBuf, pout - outBuf);
+}
+

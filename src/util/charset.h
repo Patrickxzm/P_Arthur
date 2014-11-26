@@ -6,6 +6,14 @@
 using std::map;
 using std::string;
 using std::set;
+using std::wstring;
+
+wstring wc(const char* mb_code, const string &in, const char* wc_code = "UCS-4LE");
+wstring wc1(const string &in, const char *locale="zh_CN.UTF-8");
+string mb(const char* mb_code, const wstring &in, const char* wc_code = "UCS-4LE");
+string iconv_str(const char* from, const char* to, const string &in);
+size_t convert_charset(const char* from, const char* to, const string &in
+     , string &out, string& errmsg);
 
 class CMap2Oname: public map<string, string>
 {

@@ -1,8 +1,8 @@
 #include "util.h"
+#include "charset.h"
 #include "cutil.h"
 #include "memory.hpp"
 #include <sys/stat.h>
-#include <iconv.h>
 #include <sstream>
 #include <assert.h>
 #include <cctype>
@@ -10,8 +10,6 @@
 #include <stdexcept>
 #include <errno.h>
 #include <limits>
-#include <cstdlib>
-#include <cstring>
 
 using std::numeric_limits;
 using std::ostringstream;
@@ -48,66 +46,6 @@ tostring(int i)
 	char* ret = intoa(i, buf, buf_size);
 	assert(ret != 0);
 	return string(buf);
-}
-
-wstring
-wc1(const string &in, const char *locale)
-{
-	setlocale(LC_CTYPE, locale);
-	wchar_t buf[in.size()+1];
-	mbstowcs(buf, in.c_str(), in.size()+1);
-	return buf;
-}
-
-string
-iconv_str(const char* from, const char* to, const string &in)
-{
-	iconv_t env;
-	env = iconv_open(to, from);
-	char* pin = (char*)in.c_str();
-	size_t leftIn = in.size();
-	size_t leftOut = leftIn * 4;
-	char buffer[leftOut];
-	char* pout = buffer;
-	string result;
-	if (size_t(-1) == iconv(env, &pin, &leftIn, &pout, &leftOut))
-		result = strerror(errno);
-	else
-		result = string(buffer, pout - buffer);
-	iconv_close(env);
-	return result;
-}
-
-wstring 
-wc(const char* mb_code, const string& in, const char* wc_code)
-{
-	size_t result;
-	iconv_t env;
-	env = iconv_open(wc_code, mb_code);
-	char* pin = (char*)in.c_str();
-	size_t leftIn = in.size();
-	wchar_t wcs[leftIn];
-	char* pout = (char*)wcs;
-	size_t leftOut = sizeof(wcs);
-	result = iconv(env, &pin, &leftIn, &pout, &leftOut);
-	iconv_close(env);
-	return wstring(wcs, (sizeof(wcs) - leftOut)/sizeof(wchar_t));
-}
-
-string 
-mb(const char* mb_code, const wstring& in, const char* wc_code)
-{
-	size_t result;
-	iconv_t env;
-	env = iconv_open(mb_code, wc_code);
-	char* pin = (char*)in.c_str();
-	size_t leftIn = in.size() * sizeof(wchar_t);
-	size_t leftOut = leftIn;
-	char outBuf[leftOut];
-	char* pout = outBuf;
-	result = iconv(env, &pin, &leftIn, &pout, &leftOut);
-	iconv_close(env);
-	return string(outBuf, pout - outBuf);
 }
 
 int 

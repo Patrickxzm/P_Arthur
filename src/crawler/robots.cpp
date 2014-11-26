@@ -1,6 +1,7 @@
 #include "robots.h"
 #include "util/util.h"
 #include <sstream>
+#include <cstdlib>
 using std::istringstream;
 
 CRobots::CRobots(const string &agent) : f_init(false), user_agent(agent)

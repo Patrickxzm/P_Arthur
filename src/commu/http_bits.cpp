@@ -105,25 +105,20 @@ CHeaders::charset() const
 string 
 CHeaders::value(const string& name) const
 {
-	return value(name.c_str());
-}
-
-string CHeaders::value(const char* name) const
-{
-	if (name == 0)
+	if (name.empty())
 		return "";
 	for (unsigned i=0; i<size(); i++)
-		if (strcasecmp((*this)[i].name.c_str(), name)==0)
+		if (strcasecmp((*this)[i].name.c_str(), name.c_str())==0)
 			return (*this)[i].value;
 	return "";
 }
 
 vector<const string *>
-CHeaders::values(const char* name) const
+CHeaders::values(const string& name) const
 {
 	vector<const string*> __v;
 	for (unsigned i=0; i<size(); i++)
-		if (strcasecmp((*this)[i].name.c_str(), name)==0)
+		if (strcasecmp((*this)[i].name.c_str(), name.c_str())==0)
 			__v.push_back(&(*this)[i].value);
 	return __v;
 }
@@ -162,22 +157,6 @@ CHeaders::content_disposition() const
 		}
 	}
 	return disposition;
-}
-
-string
-CHeaders::encoding() const
-{
-	string prefix="charset=";
-	const string &content_type = value("Content-Type");
-	string::size_type pos = content_type.find(prefix);
-	if (pos == string::npos)
-		return "";
-	istringstream iss(string(content_type, pos+prefix.length()));
-	string res;
-	if (iss>>res)
-		return res;
-	else
-		return "";
 }
 
 media_t

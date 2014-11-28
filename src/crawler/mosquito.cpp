@@ -557,7 +557,7 @@ CMosquito::parse(const CHttpReply &reply, int status)
 
 	// "text/html" type page:
 	if (encoding.empty())
-		encoding = reply.headers.encoding();
+		encoding = reply.headers.charset();
 	encoding = htmlFindEncoding2(reply.body.c_str(), reply.body.length()
 				, encoding.c_str());
 	if (encoding.empty() && my_error.get())

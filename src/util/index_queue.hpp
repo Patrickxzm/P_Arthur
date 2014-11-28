@@ -66,7 +66,7 @@ public:
 		if (iter==index.end())
 			return false;
 		v = *iter->second;
-		erase(iter->second);
+		this->erase(iter->second);  //use of "this->" is reinforced
 		index.erase(iter);
 		return true;
 	}

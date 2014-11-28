@@ -1,6 +1,7 @@
 #ifndef _PAT_EXCEP_H_050603
 #define _PAT_EXCEP_H_050603
 #include <stdexcept>
+#include <string>
 
 
 class pat_bad_alloc : public std::bad_alloc

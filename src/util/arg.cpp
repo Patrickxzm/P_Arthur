@@ -3,8 +3,6 @@
 #include <stdlib.h>
 using std::strlen;
 using std::strncmp;
-using std::logic_error;
-using std::ostringstream;
 
 CArg::CArg(int argc, char** argv)
 {

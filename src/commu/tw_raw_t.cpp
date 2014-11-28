@@ -10,18 +10,18 @@ help(ostream &os)
 {
 	os<<"Tool for reading CTW_Raw pages and output them.\n"
 	  "\tUsage: cmd [--prefix=...]* [--select=...] [--num=...] \n"
-	  "\t\t  [--one-by-one] [--package] \n"
-	  "\t\t  [--http-reply | --body-only | --list-only] [-h|--help]\n"
-	  "\t\t--prefix= : just select urls with this prefix.\n"
-	  "\t\t--select= : filename of the url list to output.\n"
+	  "\t\t  [--one-by-one | --package] [--to-code=...]\n"
+	  "\t\t  [--http-reply | --body-only] [-h|--help]\n"
+	  "\t\t--prefix= : select urls with such prefix.\n"
+	  "\t\t--select= : filename of selected url.\n"
 	  "\t\t--num= : output num pages at most.\n"
-	  "\t\t--one-by-one : instead of cout, write output to files with prefix: \n"
+          "\t\t--to-code= : http-body will be converted to this charset.\n"
+	  "\t\t--one-by-one : Write output to seperated files with names:\n"
 	  "\t\t\t\t \"1.\", \"2.\", \"3.\", ...\n"
-	  "\t\t\t\t suffix will be raw, html, or reply\n"
-	  "\t\t--package : output record in package:\"length\\n body\\n\"\n" 
+	  "\t\t\t\t extention will be raw, html, or reply\n"
+	  "\t\t--package : output record in package:\"http-length\\n http-body\\n\"\n" 
 	  "\t\t--http-reply : output is in http-reply format, tw_raw headers are discarded.\n"
 	  "\t\t--body-only : only http body is output.\n"
-	  "\t\t--list-only : only list url and date of raw page.\n"
 	  "\t\t-h|--help : print this message.\n"
 	  "\t\tcin : CTWRaw pages.\n"
 	  "\t\tcout : output if \"--one-by-one\" option is not set.\n"
@@ -62,16 +62,20 @@ main(int argc, char* argv[])
 	}
 	if (val=arg.find1("--num="))
 		num = val.INT();
+        string to_code;
+        val = arg.find1("--to-code=");
+        if (val)
+            to_code = val;
+        else
+            to_code = "";
+
 	bool oneByOne = arg.found("--one-by-one");
 	bool body_only = arg.found("--body-only");
 	bool http_reply = arg.found("--http-reply");
-	bool list_only = arg.found("--list-only");
 	bool package = arg.found("--package");
-	if (oneByOne && list_only || package && oneByOne 
-	   || package && list_only) 
+	if (package && oneByOne)
 	{
-		cerr<<"options \"--one-by-one\", \"--list-only\""
-		  ", \"--package\" is conflict with each other"
+		cerr<<"options \"--one-by-one\", \"--package\" is conflict with each other"
 		  <<endl;
 		return -1;
 	}
@@ -94,11 +98,8 @@ main(int argc, char* argv[])
 		}
 		i++;
 
-		if (list_only)
-		{
-			cout<<i<<": "<<raw.url<<'\n'<<raw.date<<'\n'<<endl;
-			continue;
-		}
+                if (to_code.length() > 0)
+                     raw.iconv(to_code);
 		ostream os(cout.rdbuf());
 		ofstream ofs;
 		if (oneByOne)

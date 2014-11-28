@@ -1,4 +1,6 @@
 ## Makefile.am 
+AUTOMAKE_OPTIONS = 
+#INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)
 noinst_PROGRAMS = 
 check_PROGRAMS =
 lib_LIBRARIES = libpa.a

@@ -12,6 +12,7 @@ public:
 	CTWRaw()
 	{}
 	CTWRaw(const string &u, const string &ip, const CHttpReply &r);
+        bool iconv(const string &target);
 public:
 	typedef map<string, string> ext_type;
 	ext_type ext;
@@ -20,6 +21,12 @@ public:
 	string date;
 	string ipaddr;
 	CHttpReply reply;
+private:
+    bool get_charset_from_header(string &charset);
+    void set_charset_to_header(const string &charset);
+    bool get_charset_from_http_header(string &charset);
+    bool get_charset_from_html(string &charset);
+    bool convert_charset(const string &source, const string &target);
 };
 
 ostream& operator<<(ostream &os, const CTWRaw &raw);

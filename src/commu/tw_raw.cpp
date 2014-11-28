@@ -1,6 +1,8 @@
 #include "tw_raw.h"
 #include "sys/types.h"
 #include "util/cutem.h"
+#include "util/xmlGet.h"
+#include "util/charset.h"
 #include <ctime>
 #include <sstream>
 
@@ -112,4 +114,69 @@ istream& operator>>(istream &is, CTWRaw &raw)
 	oss<<iss.rdbuf();
 	reply.body = oss.str();
 	return is;
+}
+
+bool
+CTWRaw::iconv(const string &target)
+{
+    string source;
+    if (this->get_charset_from_header(source)
+        || this->get_charset_from_http_header(source)
+        || this->get_charset_from_html(source)
+      )
+    {
+        if (this->convert_charset(source, target))
+        {
+            this->set_charset_to_header(target);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+CTWRaw::convert_charset(const string &source, const string &target)
+{
+    string converted, errmsg;
+    size_t result = ::convert_charset(source.c_str(), target.c_str()
+       , this->reply.body, converted, errmsg);
+    if (result == (size_t)-1)
+        return false;
+    this->reply.body = converted;
+    return true;
+}
+
+bool
+CTWRaw::get_charset_from_html(string &charset)
+{
+    charset = htmlFindEncoding2(this->reply.body.c_str(), 
+             this->reply.body.length(), NULL);
+    if (charset.empty())
+        return false;
+    return true;
+}
+
+bool
+CTWRaw::get_charset_from_header(string &charset)
+{
+    ext_type::const_iterator cit = this->ext.find("charset");
+    if (cit == this->ext.end())
+        return false;
+    charset = cit->second;
+    return true;
+}
+
+void
+CTWRaw::set_charset_to_header(const string &charset)
+{
+    this->ext["charset"] = charset;
+}
+
+bool
+CTWRaw::get_charset_from_http_header(string &charset)
+{
+    charset = this->reply.headers.charset();
+    if (charset.empty())
+        return false;
+    return true;
 }

@@ -5,6 +5,7 @@ AC_PREREQ(2.61)
 AC_INIT([P_Arthur], [1.0])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
+#AM_INIT_AUTOMAKE([subdir-objects])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.

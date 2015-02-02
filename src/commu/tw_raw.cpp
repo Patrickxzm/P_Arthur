@@ -58,6 +58,7 @@ istream& operator>>(istream &is, CTWRaw &raw)
 	string key, value;
 	int length = -1;
 	is>>ws;
+    raw.ext.clear();
 	while (getline(is, key, ':') && is>>ws && getline(is, value))
 	{
 		if ("version" == key)

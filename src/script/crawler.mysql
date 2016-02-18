@@ -1,0 +1,1 @@
+mysql -u crawler -pcrawler2014 -h localhost crawler

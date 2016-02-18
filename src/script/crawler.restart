@@ -1,0 +1,13 @@
+#!/bin/sh
+killall host_crawler scheduler_t
+sleep 5;
+if test `ps -ef|grep "host_crawler\|scheduler_t"|grep -v grep|wc -l` -gt 0; then
+	echo "Old crawler process not cleaned!"
+	exit
+fi
+
+echo "update host set crawler=NULL where crawler='`hostname`'"|crawler.mysql
+echo "UPDATE crawler SET ProcessQuota=100, remarks='Restart' WHERE name='`hostname`' AND ProcessQuota=-1"\
+  | crawler.mysql
+
+crawler.run

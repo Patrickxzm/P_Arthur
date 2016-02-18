@@ -1,0 +1,46 @@
+#!/bin/sh
+# P_Arthur.run
+# do it after running a "screen" command.
+
+ulimit -c unlimited
+
+if httpf --url="http://www.sina.com.cn">/dev/null; then
+	echo "Crawler Starting ..."
+else
+	echo "Network unavailable."
+	exit -1;
+fi
+
+exportdir=/POOL_Temp_space/DataShared
+
+if test ! -d $exportdir
+then
+	if ! mkdir -p $exportdir
+	then
+		exit 1
+	fi
+	chown :infomall $exportdir
+	chmod g+w $exportdir
+fi
+
+rundir=$HOME/local/run/;
+if test ! -d $rundir;
+then
+	mkdir -p $rundir
+fi
+if ! cd $rundir;
+then 
+	exit
+fi
+timedir=`date +%m%d%Y`
+if test ! -d $timedir 
+then
+	mkdir -p $timedir
+fi
+
+if cd $timedir
+then
+    scheduler_t --export-dir=$exportdir --db-host=maze63 --db-name=crawler \
+      --db-user=crawler --db-pass=crawler2008 --collect-outlinks \
+      --collect-overflow --collect-discard 2>&1 | tee scheduler.log
+fi

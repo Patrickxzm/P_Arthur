@@ -105,7 +105,10 @@ istream& operator>>(istream &is, CTWRaw &raw)
 	istringstream iss(string(buf.ptr(), length));
 	CHttpReply &reply = raw.reply;
 	if (!(iss>>reply.status))
+        {
+		is.setstate(std::ios::failbit);
 		return is;
+        }
 	CHeader header;
 	reply.headers.clear();
 	while (iss>>header)

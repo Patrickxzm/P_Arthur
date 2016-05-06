@@ -2,7 +2,6 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
-#include <zlib.h>
 #include <cstdlib>
 #include <sys/stat.h>
 #include <sys/types.h>

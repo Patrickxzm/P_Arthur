@@ -57,6 +57,7 @@ istream& operator>>(istream &is, CTWRaw &raw)
 {
 	string key, value;
 	int length = -1;
+	int unzip_length = -1;
 	is>>ws;
     raw.ext.clear();
 	while (getline(is, key, ':') && is>>ws && getline(is, value))
@@ -84,10 +85,16 @@ istream& operator>>(istream &is, CTWRaw &raw)
 		else if ("length" == key)
 		{
 			istringstream iss(value);
-			if (!(iss>>length) || length <= 0)
+			if (!(iss>>length) || length < 0)
 				is.setstate(std::ios::failbit);
-			break;
+			break;     // length must be the last raw header.
 		}
+		else if ("unzip-length" == key)
+		{
+			istringstream iss(value);
+			if (!(iss>>unzip_length) || unzip_length < 0)
+				is.setstate(std::ios::failbit);
+		} 
 		else 
 		{
 			raw.ext[key] = value;
@@ -98,11 +105,20 @@ istream& operator>>(istream &is, CTWRaw &raw)
 	string empty;
 	getline(is, empty);
 	cutem buf;
-	buf.reserve(length+1);
+	buf.reserve(length);
 	if (!is.read(buf.ptr(), length))
 		return is;
-	buf.ptr()[length] = '\0';
-	istringstream iss(string(buf.ptr(), length));
+	istringstream iss;
+        if (unzip_length >= 0)
+        {
+		cutem buf_unzip;
+		buf_unzip.reserve(unzip_length);
+		unzip_length = unzip(buf.ptr(), length, buf_unzip, unzip_length);
+		iss.str(string(buf_unzip.ptr(), unzip_length));
+        } else {
+		buf.ptr()[length] = '\0';
+		iss.str(string(buf.ptr(), length));
+	}
 	CHttpReply &reply = raw.reply;
 	if (!(iss>>reply.status))
         {

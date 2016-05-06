@@ -81,7 +81,7 @@ cutem::decrease(unsigned size)
 int 
 zip(const char* source, int len, cutem &target)
 {
-	uLongf zip_len = len * 2 + 12;
+	uLongf zip_len = compressBound(len) + 12;
 	target.reserve(zip_len);
 	if (Z_OK != compress((Bytef*)target.ptr(), &zip_len
 	    , (const Bytef*)source, len))
@@ -90,9 +90,13 @@ zip(const char* source, int len, cutem &target)
 }
 
 int 
-unzip(const char* source, int len, cutem &target)
+unzip(const char* source, int len, cutem &target, int in_unzip_len)
 {
-	uLongf unzip_len = len * 100 + 100;
+	uLongf unzip_len;
+        if (in_unzip_len >= 0)
+		unzip_len = in_unzip_len;
+	else
+		unzip_len = len * 100 + 100;  //just a guess!
 	target.reserve(unzip_len);
 	int res;
 	while ((res=uncompress((Bytef*)target.ptr(), &unzip_len, (const Bytef*)source, len))

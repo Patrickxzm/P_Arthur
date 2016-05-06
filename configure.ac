@@ -42,9 +42,9 @@ CPPFLAGS="-I$HOME/local/include -I$HOME/include $CPPFLAGS"
 
 ## Checks for user's command line arguments
 AC_ARG_ENABLE(debug,
-  [  --enable-debug   Produce code more debugable with "-Wall -g" option],
-  [  CFLAGS="-Wall -g"
-     CXXFLAGS="-Wall -g"
+  [  --enable-debug   Produce code more debugable with "-Wall -g -O0" option],
+  [  CFLAGS="-Wall -g -O0"
+     CXXFLAGS="-Wall -g -O0"
   ],
   [
      CFLAGS="-Wall $CFLAGS"

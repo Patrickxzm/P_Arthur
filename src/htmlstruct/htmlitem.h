@@ -18,8 +18,8 @@ private:
 	bool read(const string &str, unsigned &rpos, string &buf);
 	void write(string &str, unsigned &wpos, const string &buf);
 private:
-	hash_map<string, char, hashstr> str2ascii;
-	hash_map<int, char> code2ascii;
+	unordered_map<string, char> str2ascii;
+	unordered_map<int, char> code2ascii;
 };
 
 extern CHTMLDEscape html_descape;

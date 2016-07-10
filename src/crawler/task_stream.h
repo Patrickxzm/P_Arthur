@@ -25,7 +25,7 @@ public:
 		, const char* fn_overflow="overflow");
 	operator bool() const 
 	{
-		return *this && discard && overflow;
+		return active && discard && overflow;
 	}
 	CActiveTaskFile& put(const CTask &task, const CTask &bak);
 public:

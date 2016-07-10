@@ -37,7 +37,7 @@ for mylib in /usr/lib /usr/lib64 /usr/local/lib /usr/local/lib64 $HOME/lib $HOME
 		LDFLAGS="-L$mylib -Wl,-rpath,$mylib $LDFLAGS"
 	fi
 done
-CPPFLAGS="-I$HOME/local/include -I$HOME/include $CPPFLAGS"
+CPPFLAGS="-I$HOME/local/include -I$HOME/include -I/usr/local/include $CPPFLAGS"
 
 
 ## Checks for user's command line arguments

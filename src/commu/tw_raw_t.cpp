@@ -2,7 +2,9 @@
 #include "util/arg.h"
 #include "util/util.h"
 #include "http_reply.h"
+#include "url/url.h"
 #include <iostream>
+#include <set>
 
 using namespace std;
 ostream&
@@ -48,7 +50,7 @@ main(int argc, char* argv[])
 	int num=0;
 	CArg::ArgVal val;
 	set<string> selects;
-	if (val = arg.find1("--select="))
+	if ((val = arg.find1("--select=")))
 	{
 		ifstream ifs(val);
 		if (!ifs)
@@ -60,7 +62,7 @@ main(int argc, char* argv[])
 		while (ifs>>urlstr)
 			selects.insert(urlstr);
 	}
-	if (val=arg.find1("--num="))
+	if ((val=arg.find1("--num=")))
 		num = val.INT();
         string to_code;
         val = arg.find1("--to-code=");

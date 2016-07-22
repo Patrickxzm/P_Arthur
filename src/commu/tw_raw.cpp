@@ -112,7 +112,6 @@ istream& operator>>(istream &is, CTWRaw &raw)
         if (unzip_length >= 0)
         {
 		cutem buf_unzip;
-		buf_unzip.reserve(unzip_length);
 		unzip_length = unzip(buf.ptr(), length, buf_unzip, unzip_length);
 		iss.str(string(buf_unzip.ptr(), unzip_length));
         } else {

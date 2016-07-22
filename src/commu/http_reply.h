@@ -4,18 +4,15 @@
 #include <istream>
 #include <fstream>
 #include "TcpClient.h"
-#include "http_request.h"
 using std::ofstream;
 using std::istream;
 
 class CHttpReply{
 public:
 	CHttpReply();
-	CHttpReply(const CHttpRequest &request, int max=2000000000);
 	CHttpReply(const string &method, int max=2000000000);
 	virtual ~CHttpReply()
 	{}
-	void set_req(const CHttpRequest &request);
 	int set_max_size(int max);
 public:
 	CStatus status;
@@ -25,7 +22,6 @@ public:
 	friend CTCPClient& operator>>(CTCPClient& commu, CHttpReply& reply);
 private:
 	static int get_hex(const char* str, int n);
-	//const CHttpRequest *_request;
 	int max_size;
 	string req_method;
 };

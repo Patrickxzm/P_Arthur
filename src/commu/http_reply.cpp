@@ -48,24 +48,12 @@ CHttpReply::CHttpReply(const string &method, int max)
 {
 }
 
-CHttpReply::CHttpReply(const CHttpRequest &request, int max) 
-	: max_size(max)
-{
-	req_method = request.get_method();
-}
-
 int
 CHttpReply::set_max_size(int max)
 {
 	int ret = max_size;
 	max_size = max;
 	return ret;
-}
-
-void 
-CHttpReply::set_req(const CHttpRequest &request)
-{
-	req_method = request.get_method();
 }
 
 int 

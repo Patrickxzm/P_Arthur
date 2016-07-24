@@ -5,7 +5,7 @@ AC_PREREQ(2.61)
 AC_INIT([P_Arthur], [1.0])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
-#AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE([subdir-objects])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
@@ -109,6 +109,10 @@ AC_CHECK_LIB([z], [compress],
 [
 	AC_MSG_ERROR([z library not found])
 ])
+AC_CHECK_LIB([crypto], [MD5], [],
+[
+	AC_MSG_ERROR([crypto library not found])
+])
 
 ## Looking for libraries
 AC_SEARCH_INCDIR([mysql])
@@ -150,5 +154,11 @@ AC_CHECK_LIB([xml2], [xmlXPathNewContext],
 ])
 
 AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+                 src/Makefile
+                 src/util/Makefile
+                 src/url/Makefile
+                 src/commu/Makefile
+                 src/htmlstruct/Makefile
+                 src/crawler/Makefile
+                 src/script/Makefile])
 AC_OUTPUT

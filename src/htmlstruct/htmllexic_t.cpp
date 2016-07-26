@@ -15,20 +15,20 @@ int
 main(int argc, char* argv[])
 {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help();
 		return 1;
 	}
-	string htmlpage;
 
-	CArg::ArgVal av = arg.find1("-f");
-	if (av.get())
+	string htmlpage;
+	string fn;
+	if (arg.findLast("-f", fn))
 	{
-		ifstream ifs((const char*)av);
+		ifstream ifs(fn.c_str());
 		if (!ifs) 
 		{
-			cerr<<"Can not open the file: "<<(const char*)av<<endl;
+			cerr<<"Can not open the file: "<<fn<<endl;
 			return -1;
 		}
 		string st;

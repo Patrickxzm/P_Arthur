@@ -35,10 +35,10 @@ mosquito_parser_t_main(int argc, char* argv[])
     mosquito.setDebug(true);
 	mosquito.robots.init();
 	
-	vector<CArg::ArgVal> target = arg.find("--save-link=");
+	vector<string> target = arg.find("--save-link=");
 	for (unsigned i=0; i<target.size(); i++)
 	{
-		string hostport = target[i].get();
+		string hostport = target[i];
 		string host;
 		int port;
 		CURL::split("http", hostport, host, port);
@@ -61,13 +61,9 @@ mosquito_parser_t_main(int argc, char* argv[])
 
 	string host;
 	int port;
-	CArg::ArgVal val;
-	if (val=arg.find1("--host="))
+	if (arg.findLast("--host=", host))
 	{
-		host = string(val);
-		if (val=arg.find1("--prot="))
-			port = val.INT();
-		else
+		if (!arg.findLastInt("--port=", port))
 			port = 80;
 		mosquito.shadows.open("visited", 100000);
 	}

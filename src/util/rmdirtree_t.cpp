@@ -20,21 +20,16 @@ int
 main(int argc, char* argv[])
 {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help(cout);
 		return 1;
 	}
 	string dir;
-	CArg::ArgVal val = arg.find1("--dir=");
-	if (!val.get())
+        if (!arg.findLast("--dir=", dir))
 	{
 		cerr<<"Please give a \"--dir=\" option."<<endl;
 		return -1;
-	}
-	else 
-	{
-		dir = string(val);
 	}
 	switch (rmdirtree(dir))
 	{

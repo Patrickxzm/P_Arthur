@@ -1,5 +1,6 @@
 #include "shadow.h"
 #include "arg.h"
+#include <sstream>
 #include <iostream>
 
 using namespace std;
@@ -29,30 +30,33 @@ int
 main(int argc, char* argv[])
 try {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help(cout);
 		return 1;
 	}
-	CArg::ArgVal val;
+        string strCap;
 	unsigned capacity;
-	if (val=arg.find1("--capacity="))
-		capacity = val.INT();
+	if (arg.findLast("--capacity=", strCap))
+        {
+		capacity = stoul(strCap);
+        }
 	else 
 		capacity = default_capacity;
 	int start=-1, end=-1;
-	if (val=arg.find1("--start="))
+        string strNum;
+	if (arg.findLast("--start=", strNum))
 	{
-		start = val.INT();
+		start = stoi(strNum);
 		if (start < 0)
 		{
 			cerr<<"start value should not be less than zero.\n";
 			return -1;
 		}
 	}
-	if (val=arg.find1("--end="))
+	if (arg.findLast("--end=", strNum))
 	{
-		end = val.INT();
+		end = stoi(strNum);
 		if (end <= 0)
 		{
 			cerr<<"end value must be greater than zero.\n";
@@ -67,7 +71,12 @@ try {
 	bool test = arg.found("--test");
 	bool reverse = arg.found("--reverse");
 	CStrSetShadow shadow;
-	int res = shadow.open(arg.find1("--file="), capacity, CStrSetShadow::Create);
+	int res;
+        string fn;
+        if (arg.findLast("--file=", fn))
+            res = shadow.open(fn.c_str(), capacity, CStrSetShadow::Create);
+        else
+            res = shadow.open(0, capacity, CStrSetShadow::Create);
 	if (res == CStrSetShadow::Create)
 		clog<<"New Shadow file created."<<endl;
 	clog<<"Shadow Capacity : "<<shadow.capacity()<<endl;

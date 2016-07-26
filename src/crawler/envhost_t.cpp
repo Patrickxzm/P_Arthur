@@ -63,24 +63,19 @@ main(int argc, char* argv[])
 try {
 	//return run_mysql_test();
 	CArg arg(argc, argv);
-	if (arg.find("--help").size()>0 || arg.find("-h").size()>0 )
+	if (arg.found("--help") || arg.found("-h"))
 	{
 		help(cout);
 		return 1;
 	}
-	CArg::ArgVal val;
 	string db_host;
-	if (val=arg.find1("--db-host="))
-		db_host=string(val);
+	arg.findLast("--db-host=", db_host);
 	string db_name;
-	if (val=arg.find1("--db-name="))
-		db_name=string(val);
+	arg.findLast("--db-name=", db_name);
 	string db_user;
-	if (val=arg.find1("--db-user="))
-		db_user=string(val);
+	arg.findLast("--db-user=", db_user);
 	string db_pass;
-	if (val=arg.find1("--db-pass="))
-		db_pass=string(val);
+	arg.findLast("--db-pass=", db_pass);
 	Connection conn;	
 	if (!conn.connect(db_name.c_str(), db_host.c_str(), db_user.c_str()
 	  , db_pass.c_str()))
@@ -91,17 +86,13 @@ try {
 	CHostTable hostTable(&conn);
 	
 	string host;
-	if (val=arg.find1("--host="))
-		host = val;
+	arg.findLast("--host=", host);
 	int port=CURI::default_port("http");
-	if (val=arg.find1("--port="))
-		port = val.INT();
-	if (arg.find1("--save"))
+	arg.findLastInt("--port=", port);
+	if (arg.found("--save"))
 	{
 		string path;
-		if (val=arg.find1("--path="))
-			path = val;
-		else
+		if (!arg.findLast("--path=", path))
 			path = "./";
 		switch (hostTable.saveResult(path))
 		{
@@ -121,14 +112,14 @@ try {
 			assert(false);
 		}
 	}
-	else if (arg.find1("--load"))
+	else if (arg.found("--load"))
 	{
 		if (host.empty())
 		{
 			cerr<<"Please input a host name with \"--host=\" option."<<endl;
 			return -4;
 		}
-		bool mark = arg.find1("--mark");
+		bool mark = arg.found("--mark");
 		string path = "./"+CURL::hostport("http", host, port);
 		if (0 != mkdir(path.c_str(), 0770) && errno != EEXIST)
 			cerr<<"Can not mkdir \""<<path<<"\":"<<strerror(errno)<<endl;
@@ -140,19 +131,16 @@ try {
 			cout<<"load failed"<<endl;
 			return -3;
 		}
-		if (arg.find1("--crawl"))
+		if (arg.found("--crawl"))
 			return CScheduler::run_crawler(env, true, true);
 		return 0;
 	}
-	else if (arg.find1("--import"))
+	else if (arg.found("--import"))
 	{
 		string host_fn;
 		bool force = arg.found("--force");
-		if (val=arg.find1("--host-file="))
-		{
-			host_fn = string(val);
+		if (arg.findLast("--host-file=", host_fn))
 			return import(hostTable, host_fn, force);
-		}
 		else if (!host.empty())
 		{
 			CHost4Import import;

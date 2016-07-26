@@ -5,6 +5,7 @@
 #include <cstring>
 #include <stdio.h>
 #include <cassert>
+#include <sstream>
 
 using namespace std;
 
@@ -25,19 +26,17 @@ int
 main(int argc, char* argv[])
 {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help(cout);
 		return 1;
 	}
 	string base;
-	CArg::ArgVal val;
-	if (!(val=arg.find1("--base=")).get())
+	if (!arg.findLast("--base=", base))
 	{
 		cerr<<"Please specify the base url."<<endl;
 		return -1;
 	}
-	base = string(val);
 
 	ostringstream oss;
 	oss<<cin.rdbuf();

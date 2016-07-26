@@ -86,18 +86,15 @@ main(int argc, char* argv[])
 	
 	bool fMerge = arg.found("--merge");
 	string from;
-	CArg::ArgVal val;
-	if (val=arg.find1("--from="))
-		from=val;
+	arg.findLast("--from=", from);
 	string to;
-	if (val=arg.find1("--to="))
-		to = val;
+	arg.findLast("--to=", to);
 	if (fMerge)
 	{
 		vector<istream*> sorted;
-		vector<CArg::ArgVal> vals = arg.follow("--merge");
+		vector<string> vals = arg.follow("--merge");
 		for (size_t i=0; i<vals.size(); i++)
-			sorted.push_back(new ifstream(vals[i].get()));
+			sorted.push_back(new ifstream(vals[i].c_str()));
 		merge<CLink>(sorted, cout);
 		for (size_t i=0; i<sorted.size(); i++)
 			delete sorted[i];

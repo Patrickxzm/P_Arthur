@@ -40,15 +40,13 @@ int
 main(int argc, char* argv[])
 try {
 	CArg arg(argc, argv);
-	if (arg.find1("--help") || arg.find1("-h"))
+	if (arg.found("--help") || arg.found("-h"))
 	{
 		help(cout);
 		return 1;
 	}
 	string fn;
-	CArg::ArgVal val;
-	if (val=arg.find1("--hostport="))
-		fn = val;
+	arg.findLast("--hostport=", fn);
 	auto_ptr<istream> myin;
 	auto_ptr<ostream> myOK, myFail, myRaw;
 

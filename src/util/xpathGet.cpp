@@ -7,6 +7,7 @@
 #include <iconv.h>
 #include <libxml/HTMLtree.h>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -36,16 +37,18 @@ help(ostream &os)
 int main(int argc, char* argv[])
 try {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help(cout);
 		return 1;
 	}
 	ostringstream docBuf;
-	CArg::ArgVal val;
-	if (val = arg.find1("--doc="))
+        vector<string> val;
+        string fn_doc;
+        val = arg.find("--doc=");
+        if (arg.findLast("--doc=", fn_doc))
 	{
-		ifstream ifs(val);
+		ifstream ifs(fn_doc);
 		docBuf<<ifs.rdbuf();
 	}
 	else
@@ -56,8 +59,14 @@ try {
 	scoped_ptr4c<xmlDoc, xmlFreeDoc> doc;
 	if (arg.found("--html"))
 	{
-		string encoding = htmlFindEncoding2(docBuf.str().c_str()
-		   , docBuf.str().length(), arg.find1("--encode="));
+                string arg_encode;
+                string encoding;
+                if (arg.findLast("--encode=", arg_encode))
+		    encoding = htmlFindEncoding2(docBuf.str().c_str()
+		       , docBuf.str().length(), arg_encode.c_str());
+                else
+		    encoding = htmlFindEncoding2(docBuf.str().c_str()
+		       , docBuf.str().length(), 0);
 		if (encoding.size() > 0)
 		{
 			doc.reset(htmlReadMemory(docBuf.str().c_str(), docBuf.str().length()
@@ -73,7 +82,10 @@ try {
 	{
 		xmlChar_scoped_ptr xmlBody;
 		xmlBody.reset(xmlCharStrndup(docBuf.str().c_str(), docBuf.str().length()));
-		doc.reset(xmlReadDoc(xmlBody.get(), 0, arg.find1("--encode="), 0));
+		doc.reset(xmlReadDoc(xmlBody.get(), 0
+                   , arg.find("--encode=").size()>0 ?
+                       arg.find("--encode=")[0].c_str() : 0
+                   , 0));
 	}
 	if (!doc.get())
 	{
@@ -92,10 +104,11 @@ try {
 		cerr<<"Error in xmlXPathNewContext()"<<endl;
 		return -3;
 	}
-	if ((val=arg.find1("--ns=")) 
-	    && 0!=register_namespaces(xpathCtx.get(), val.get()))
+        string nsfile;
+	if (arg.findLast("--ns=", nsfile)
+	    && 0!=register_namespaces(xpathCtx.get(), nsfile.c_str()))
 	{
-		cerr<<"Error in register_namespace(\""<<val.get()<<"\")"
+		cerr<<"Error in register_namespace(\""<<nsfile<<"\")"
 		   <<endl;
 		return -4;
 	}
@@ -156,13 +169,13 @@ try {
 			for (int i=0; i<nodeset->nodeNr; i++)
 			{
 				xmlChar_scoped_ptr str;
-			//	str.reset(xmlNodeListGetString(doc.get(), 
+			//	str.reset(xmlNodeListGetString(doc.get(),
 			//		nodeset->nodeTab[i]->xmlChildrenNode, 1));
 				str.reset(xmlNodeGetContent(nodeset->nodeTab[i]));
 				cout<<i<<": ";
 				if (str.get())
 					cout<<compress_blank((char*)str.get())<<endl;
-				else 
+				else
 					cout<<"(null)"<<endl;
 			}
 		}
@@ -177,29 +190,29 @@ try {
 		{
 			help(cout);
 		}
-		else 
+		else
 		{
 			cerr<<"Wrong command."<<endl;
 		}
 	}
-	
-	if ((val = arg.find1("--dump2=")).get())
+	string fn;
+        if (arg.findLast("--dump2=", fn))
 	{
 		int resDump;
 		if (arg.found("--html"))
-			resDump = htmlSaveFileEnc(val.get(), doc.get(), "gb18030");
+			resDump = htmlSaveFileEnc(fn.c_str(), doc.get(), "gb18030");
 /*********************************************************************************
-//   The following two functions have bug: UTF8ToHtml conversion is used enstead.
+//   The following two functions have bug: UTF8ToHtml conversion is used instead.
 			//resDump = htmlSaveFileEnc(val.get(), doc.get(), "utf-8");
 			//resDump = htmlSaveFile(val.get(), doc.get());
  *********************************************************************************/
 		else
 			//resDump = xmlSaveFileEnc(val.get(), doc.get(), "utf-8");
-			resDump = xmlSaveFile(val.get(), doc.get());
+			resDump = xmlSaveFile(fn.c_str(), doc.get());
 		if (resDump == -1)
-			cerr<<"Dump to \""<<val.get()<<"\" failed."<<endl;
+			cerr<<"Dump to \""<<fn<<"\" failed."<<endl;
 		else
-			cout<<resDump<<" bytes dump to \""<<val.get()<<"\"."
+			cout<<resDump<<" bytes dump to \""<<fn<<"\"."
 			   <<endl;
 	}
 	return 0;	

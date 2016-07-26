@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-ostream& 
+ostream&
 help(ostream& os)
 {
 	os<<"Crawl a host. \n"
@@ -40,36 +40,36 @@ help(ostream& os)
 int
 readFromArg(const CArg& arg, CMosquito::CEnvCrawler &env)
 {
-	CArg::ArgVal val, val1;
-	if (val = arg.find1("--root="))
+	string strURL, fn;
+	if (arg.findLast("--root=", strURL))
 	{
-		CURL urlroot(val.get());
+		CURL urlroot(strURL);
 		env.host = urlroot.host();
 		env.port = urlroot.port();
 		env.tasks.push_back(CTask(urlroot.localstr(), 0, 0, CTask::Unknown));
 	}
-	else if ((val = arg.find1("--host=")) && (val1 = arg.find1("--lpath-file=")))
+	else if (arg.findLast("--host=", env.host) && arg.findLast("--lpath-file=", fn))
 	{
-		env.host = val;
-		ifstream ifs(val1);
+		ifstream ifs(fn.c_str());
 		CTask task;
 		while (ifs>>task)
 			env.tasks.push_back(task);
-		if (val = arg.find1("--port="))
-			env.port = val.INT();
+		string strNum;
+		if (arg.findLast("--port=", strNum))
+			env.port = stoi(strNum);
 		else
 			env.port = 80;
 	}
-	else 
+	else
 	{
 		cerr<<"\"(--host= [--port= ] --lpath-file=)|--root=\" is required."
 		   <<endl;
 		return -1;
 	}
-	vector<CArg::ArgVal> target = arg.find("--save-link=");
+	vector<string> target = arg.find("--save-link=");
 	for (unsigned i=0; i<target.size(); i++)
 	{
-		string hostport = target[i].get();
+		string hostport = target[i];
 		string host;
 		int port;
 		CURL::split("http", hostport, host, port);
@@ -77,32 +77,27 @@ readFromArg(const CArg& arg, CMosquito::CEnvCrawler &env)
 			hostport = host;
 		env.save_link_of.insert(hostport);
 	}
-	if ((val = arg.find1("--visited-prefix=")) && *val.get() != '\0')
-		env.shadow_prefix = val;
-	else {
+	if (!arg.findLast("--visited-prefix=", env.shadow_prefix)
+                || env.shadow_prefix.empty())
+	{
 		cerr<<"a non-empty prefix is required. By \"--visited-prefix=\"."
 		   <<endl;
 		return -3;
 	}
-	if (val = arg.find1("--visited-capacity="))
-		env.shadow_capacity = val.INT();
+        int num;
+	if (arg.findLastInt("--visited-capacity=", num) && num>0)
+		env.shadow_capacity = num;
 	else
 		env.shadow_capacity = 1000; //default value
-	if (val = arg.find1("--cookie-file="))
-		env.cookie_file = val;
-	if (val = arg.find1("--npages="))
-		env.pageNum = val.INT();
-	else {
+	arg.findLast("--cookie-file=", env.cookie_file);
+	if (!arg.findLastInt("--npages=", env.pageNum))
+	{
 		cerr<<"How many pages wanted? Specify it by \"--npages=\"."<<endl;
 		return -6;
 	}
-	if (val = arg.find1("--interval="))
-		env.interval = val.INT();
-	else
+	if (!arg.findLastInt("--interval=", env.interval))
 		env.interval = 1; //default value
-	if (val = arg.find1("--retry-interval="))
-		env.retry_interval = val.INT();
-	else
+	if (!arg.findLastInt("--retry-interval=", env.retry_interval))
 		env.retry_interval = 600;
 	return 0;
 }
@@ -125,19 +120,19 @@ try {
                     ;
 	}
 
-#if 0 // pseudo code 
+#if 0 // pseudo code
                   mosquito.readConfig("/etc/pa.cnf");
 		  mosquito.readConfig(arg.find1("--config="));
 		  readFromArg(arg, env);
 		  mosquito.loadEnv(env);
 #endif //0
-	CArg::ArgVal val;
 	CMosquito::CEnvCrawler env;
+	string fn;
 	if (arg.found("--silence"))
 		env.my_log.reset();
-	else if (val=arg.find1("--cout="))
-		env.my_log = auto_ptr<ostream>(new ofstream(val));
-	else 
+	else if (arg.findLast("--cout=", fn))
+		env.my_log = auto_ptr<ostream>(new ofstream(fn.c_str()));
+	else
 		env.my_log = auto_ptr<ostream>(new ostream(cout.rdbuf()));
 	env.my_error = auto_ptr<ostream>(new ostream(cerr.rdbuf()));
 	if (env.my_log.get())
@@ -157,11 +152,11 @@ try {
 		if (env.my_log.get())
 			(*env.my_log)<<"Read config file \"/etc/pa.cnf\"."<<endl;
 	}
-	if ((val=arg.find1("--config=")) && xfile.open(val)==0)
+	if (arg.findLast("--config=", fn) && xfile.open(fn.c_str())==0)
 	{
 		mosquito.readConfig(xfile);
 		if (env.my_log.get())
-			(*env.my_log)<<"Read config file \""<<val<<"\"."<<endl;
+			(*env.my_log)<<"Read config file \""<<fn<<"\"."<<endl;
 	}
 	if (readFromArg(arg, env) != 0)
 		return -1;
@@ -175,12 +170,3 @@ catch (std::exception &e)
 	cerr<<"Catch std::exception: "<<e.what()<<endl;
 	return -6;
 }
-
-#if 0 //paste_board
-	mosquito.loadEnv(host, port, lpaths, visited_prefix.c_str(), visited_capacity
-		, cookie_file, npages, interval);
-
-	int ret = readFromArg(arg, config);
-	if (ret != 0)
-		return ret;
-#endif //0

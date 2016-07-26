@@ -18,7 +18,7 @@ public:
 		OK, DNSFailure, ConnectFailure, TransferError, ProtocolError, OverRedirect
 	} result_t;
 public:
-	CHttp(const string &urlstr, const char* cookie_file=0);
+	CHttp(const string &urlstr, const string& cookie_file="");
 	const string& get_urlstr()
 	{
 		return urlstr;

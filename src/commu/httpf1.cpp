@@ -71,28 +71,22 @@ try {
 	
 	bool with_mall = arg.found("--with-mall");
 
-	CArg::ArgVal val;
 	string cookie_file;
 	CCookies cookies;
-	if (val=arg.find1("--cookie-file="))
-	{
-		cookie_file = (val);
+	if (arg.findLast("--cookie-file=", cookie_file))
 		cookies.load(cookie_file.c_str());
-	}	
 	string method = "GET";
-	if (val=arg.find1("--method="))
-		method = (val);
-	bool tw_raw = arg.find1("--tw-raw");
-	bool body_only = arg.find1("--body-only");
-	unsigned interval = 1;
-	if (val=arg.find1("--interval="))
-		interval = val.INT();
-	unsigned retry_interval = 600;
-	if (val=arg.find1("--retry-interval"))
-		retry_interval = val.INT();
-	bool keep_alive = true;
-	if (arg.find1("--disable-keep-alive"))
-		keep_alive = false;
+	arg.findLast("--method=", method);
+	bool tw_raw = arg.found("--tw-raw");
+	bool body_only = arg.found("--body-only");
+    string strNum;
+    unsigned interval = 1;
+    if (arg.findLast("--interval=", strNum))
+        interval = stoul(strNum);
+    unsigned retry_interval = 600;
+    if (arg.findLast("--retry-interval", strNum))
+        retry_interval = stoul(strNum);
+    bool keep_alive = !arg.found("--disable-keep-alive");
 	string host;
 	int port=-1;
 	string urlstr;

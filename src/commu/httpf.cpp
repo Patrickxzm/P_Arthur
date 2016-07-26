@@ -16,16 +16,15 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help(cout);
 		return 1;
 	}
-	CArg::ArgVal val;
-	const char* cookie_fn = arg.find1("--cookie-file=");
+	string cookie_fn;
+        arg.findLast("--cookie-file=", cookie_fn);
 	string urlstr;
-	if (val=arg.find1("--url="))
-		urlstr = string(val);
+	arg.findLast("--url=", urlstr);
 	CHttp http(urlstr, cookie_fn);
 	http.timeout(30,15);
 	int ret = http.fetch();

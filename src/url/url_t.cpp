@@ -30,23 +30,21 @@ int
 main(int argc, char* argv[])
 {
 	CArg arg(argc, argv);
-	if (arg.find1("-h") || arg.find1("--help"))
+	if (arg.found("-h") || arg.found("--help"))
 	{
 		help(cout);
 		return 1;
 	}
-	CArg::ArgVal val; 
-	auto_ptr<CURL> base;
-	if (val=arg.find1("--base="))
-		base = auto_ptr<CURL>(new CURL(string(val)));
-	string format;
-	if (val=arg.find1("--format="))
-		format = val;
-	string sep("\t");
-	if (val=arg.find1("--sep="))
-		sep = val;
+    string strBase;
+    auto_ptr<CURL> base;
+    if (arg.findLast("--base=", strBase))
+        base = auto_ptr<CURL>(new CURL(strBase));
+    string format;
+    arg.findLast("--format=", format);
+    string sep("\t");
+    arg.findLast("--sep=", sep);
 
-	string urlstr;
+    string urlstr;
 	while (getline(cin, urlstr))
 	{
 		CURL url(urlstr, base.get());

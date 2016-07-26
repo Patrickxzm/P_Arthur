@@ -3,14 +3,14 @@
  *   request? The answer is NO--use sniffer to detect IE communicate data.
  *					02/09/2004	08:55
  * @ After transfering http reply data successfully, some web-server close
- *   the Tcp connection. The sockfd is "-1" in CTCPCommu, but the http 
+ *   the Tcp connection. The sockfd is "-1" in CTCPCommu, but the http
  *   request is well acomplished.
  *					02/01/2004	16:26
- * @ Http package can handle more than one request method now. The method 
+ * @ Http package can handle more than one request method now. The method
  *   can be "HEAD", other than "GET".
  *					01/23/2004	00:09
  ************************************************************************/
- 
+
 #include "http.h"
 #include "TcpClient.h"
 #include <stdio.h>
@@ -21,18 +21,16 @@
 #include <sstream>
 #include <fstream>
 #include <ostream>
-#ifdef DMALLOC 
+#ifdef DMALLOC
 #include "dmalloc.h"
 #endif
 using std::flush;
 
-CHttp::CHttp(const string &urlstr, const char* cookie_file) 
-	: conn_timeout(-1), recv_timeout(-1)
+CHttp::CHttp(const string &urlstr, const string& cookie_file)
+	: conn_timeout(-1), recv_timeout(-1), __cookie_file(cookie_file)
 {
 	this->urlstr=urlstr;
 	location = urlstr;
-	if (cookie_file != 0)
-		__cookie_file = cookie_file;
 }
 
 CHttp::~CHttp()
@@ -41,7 +39,7 @@ CHttp::~CHttp()
 
 using std::ios;
 
-CHttp::result_t 
+CHttp::result_t
 CHttp::sfetch()
 {
 	CURL url(location);
@@ -61,12 +59,12 @@ CHttp::sfetch()
 	if (__cookie_file.size()>0)
 	{
 		cookies.load(__cookie_file.c_str());
-		if (!(client<<CHttpRequest(url, "GET", &cookies, false)<<flush)) 
+		if (!(client<<CHttpRequest(url, "GET", &cookies, false)<<flush))
 			return TransferError;
 	}
-	else 
+	else
 	{
-		if (!(client<<CHttpRequest(url, "GET", 0, false)<<flush)) 
+		if (!(client<<CHttpRequest(url, "GET", 0, false)<<flush))
 			return TransferError;
 	}
 	if (!(client>>reply))
@@ -94,7 +92,7 @@ CHttp::fetch()
 	int nstep = 0;
 	while ((res=sfetch()) == OK) {
 		int status = get_status();
-		if (status<300 || status>=400) 
+		if (status<300 || status>=400)
 			return OK;
 		CURL base(location);
 		location=base.newurl(reply.headers.value("Location").c_str());
@@ -107,7 +105,7 @@ CHttp::fetch()
 char* CHttp::get_header_attr(const char* attr_name)
 {
 	const string& value = reply.headers.value(attr_name);
-	if (value.empty()) 
+	if (value.empty())
 		return 0;
 	else return strdup(value.c_str());
 }
@@ -129,7 +127,7 @@ string CHttp::get_head()
 {
 	std::ostringstream head;
 	head<<reply.status<<"\r\n";
-	for(unsigned i=0; i<reply.headers.size(); i++) 
+	for(unsigned i=0; i<reply.headers.size(); i++)
 		head<<reply.headers[i]<<"\r\n";
 	return head.str();
 }

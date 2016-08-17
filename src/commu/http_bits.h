@@ -60,8 +60,6 @@ public:
 	int content_length() const;
 	CDisposition content_disposition() const;
 	string ext() const;
-private:
-	static string nulstr;
 };
 
 #endif // _PAT_HTTP_BITS_H_121003

@@ -73,12 +73,12 @@ CHttp::sfetch()
 	}
 	if (__cookie_file.size()>0)
 	{
-		vector<const string *> cookie_headers;
+		vector<string> cookie_headers;
 		cookie_headers = reply.headers.values("Set-Cookie");
 		if (cookie_headers.size() > 0)
 		{
 			for (unsigned i = 0; i<cookie_headers.size(); i++)
-				cookies.add(CCookie(*cookie_headers[i]));
+				cookies.add(CCookie(cookie_headers[i]));
 			cookies.save(__cookie_file.c_str());
 		}
 	}

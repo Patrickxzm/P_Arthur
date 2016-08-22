@@ -105,22 +105,20 @@ CHeaders::charset() const
 string 
 CHeaders::value(const string& name) const
 {
-	if (name.empty())
-		return "";
-	for (unsigned i=0; i<size(); i++)
-		if (strcasecmp((*this)[i].name.c_str(), name.c_str())==0)
-			return (*this)[i].value;
+	for (unsigned i=0; i<this->size(); i++)
+		if (tolower(this->at(i).name) == tolower(name))
+			return this->at(i).value;
 	return "";
 }
 
-vector<const string *>
+vector<string>
 CHeaders::values(const string& name) const
 {
-	vector<const string*> __v;
-	for (unsigned i=0; i<size(); i++)
-		if (strcasecmp((*this)[i].name.c_str(), name.c_str())==0)
-			__v.push_back(&(*this)[i].value);
-	return __v;
+	vector<string> result;
+	for (unsigned i=0; i<this->size(); i++)
+		if (tolower(this->at(i).name) == tolower(name))
+			result.push_back(this->at(i).value);
+	return result;
 }
 
 int

@@ -446,10 +446,10 @@ CMosquito::fetch(CHttpReply &reply)
 	if (conn>>reply)
 	{
 		if (my_log.get()) (*my_log)<<"Get Reply."<<endl;
-		vector<const string*> cookie_headers;
+		vector<string> cookie_headers;
 		cookie_headers = reply.headers.values("Set-Cookie");
 		for (unsigned i = 0; i<cookie_headers.size(); i++)
-			cookies.add(CCookie(*cookie_headers[i]));
+			cookies.add(CCookie(cookie_headers[i]));
 		return Reply_OK;
 	}
 	else {

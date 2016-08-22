@@ -53,7 +53,7 @@ class CHeaders : public vector<CHeader>
 {
 public:
 	string value(const string& name) const;
-	vector<const string*> values(const string& name) const;
+	vector<string> values(const string& name) const;
 
 	media_t mtype() const;
 	string charset() const;

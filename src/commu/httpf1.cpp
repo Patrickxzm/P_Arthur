@@ -151,10 +151,10 @@ try {
 		}
 		if (!cookie_file.empty())
 		{
-			vector<const string *> cookie_headers;
+			vector<string> cookie_headers;
 			cookie_headers = reply.headers.values("Set-Cookie");
 			for (unsigned i = 0; i<cookie_headers.size(); i++)
-				cookies.add(CCookie(*cookie_headers[i]));
+				cookies.add(CCookie(cookie_headers[i]));
 			cookies.save(cookie_file.c_str());
 		}
 		if (with_mall && !CTypeFilterMall::accept(reply))

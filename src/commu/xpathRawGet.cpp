@@ -1,7 +1,7 @@
-#include "xmlGet.h"
-#include "arg.h"
-#include "memory.hpp"
-#include "util.h"
+#include "util/xmlGet.h"
+#include "util/arg.h"
+#include "util/memory.hpp"
+#include "util/util.h"
 #include <assert.h>
 #include <fstream>
 #include <iconv.h>
@@ -14,25 +14,15 @@ using namespace std;
 ostream&
 help(ostream &os)
 {
-	os<<"Get content with xpath expression from xml document.\n"
-	  "\tUsage: Cmd --doc=... [--encode=...] [--html] [--ns=...] [--dump2=...] [-h|--help]\n"
-	  "\t\t --doc= : file name of the xml document.\n"
-	  "\t\t --encode= : encoding of the input document. (default: auto-detect)\n"
-	  "\t\t --html : document is in html format.\n"
-	  "\t\t --ns= : namespace specification file in xml format.\n"
-	  "\t\t --dump2= : dump the xml(html) document to file. For html \"GB18030\" \n"
-	  "\t\t\t encoding is specified, bacause UTF8 encoding for htmlSaveFileEnv() has bug in libxml2.7.8\n"
+	os<<"Extract content from TWR input, with xpath expression.\n"
+	  "\tUsage: Cmd --expr=... [-h|--help]\n"
+          "\t\t --expr= : xpath expression\n"
 	  "\t\t -h|--help : print this message.\n"
-	  "\t\t cin : command strings following.\n"
-	  "\t\t\t cd xpath \n"
-	  "\t\t\t next \n"
-	  "\t\t\t content xpath \n"
-	  "\t\t\t tree xpath \n"
-	  "\t\t\t help \n"
-	  "\t\t cout : results in UTF-8.\n"
 	  <<endl;
 	return os;
 }
+
+vector<string> extract(const CTWRaw& raw, const string &expr);
 
 int main(int argc, char* argv[])
 try {
@@ -41,6 +31,22 @@ try {
 	{
 		help(cout);
 		return 1;
+	}
+	string expr;
+        if (!arg.findLast("--expr=", expr) || expr.empty())
+	{
+		cout<<"please specify a \"--expr=\" option."<<endl;
+		help(cout);
+		return 2;
+	}
+	CTWRaw raw;
+	while (cin>>raw)
+	{
+		vector<string> contents = extract(raw, expr);
+		for (int i=0; i<contents.size(); i++)
+		{
+			cout<<contents[i]<<endl;
+		}
 	}
 	ostringstream docBuf;
         vector<string> val;
@@ -97,13 +103,6 @@ try {
 	else
 		cout<<"Document Encoding: "<<doc->encoding<<endl;
 
-	scoped_ptr4c<xmlXPathContext, xmlXPathFreeContext> xpathCtx;
-	xpathCtx.reset(xmlXPathNewContext(doc.get()));
-	if (!xpathCtx.get())
-	{
-		cerr<<"Error in xmlXPathNewContext()"<<endl;
-		return -3;
-	}
         string nsfile;
 	if (arg.findLast("--ns=", nsfile)
 	    && 0!=register_namespaces(xpathCtx.get(), nsfile.c_str()))
@@ -221,4 +220,24 @@ catch (std::exception &e)
 {
 	cerr<<"Catch std::exception: "<<e.what()<<endl;
 	return -1;
+}
+
+vector<string>
+extract(const CTWRaw& raw, const string &expr)
+{
+	if (raw.reply.headers.value("Content-Type").find("text/html") == string::npos)
+		throw exception("Can only process \"text/html\");
+	string encoding = htmlFindEncoding2(raw.reply.body.c_str()
+	   , raw.reply.body.length(), raw.reply.headers.charset());
+	scoped_ptr4c<xmlDoc, xmlFreeDoc> doc;
+	doc.reset(htmlReadMemory(docBuf.str().c_str(), docBuf.str().length()
+	   , 0, encoding.c_str(), HTML_PARSE_RECOVER));
+        if (!doc.get())
+		throw exception("Parse document failed!");
+	scoped_ptr4c<xmlXPathContext, xmlXPathFreeContext> xpathCtx;
+	xpathCtx.reset(xmlXPathNewContext(doc.get()));
+	if (!xpathCtx.get())
+		throw exception("Error in xmlXPathNewContext()");
+	scoped_ptr4c<xmlXPathObject, xmlXPathFreeObject> entries;
+	xmlChar_scoped_ptr xpath = 
 }

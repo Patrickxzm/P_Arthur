@@ -40,13 +40,11 @@ htmlstruct_src = htmlstruct/attr.cpp htmlstruct/text.cpp htmlstruct/tag.cpp \
    htmlstruct/refresh.cpp 
 libpa_a_SOURCES += $(htmlstructh_HEADERS) $(htmlstruct_src)
 
-crawlerh_HEADERS = crawler/mosquito.h crawler/common.h crawler/task_stream.h \
-   crawler/task.h crawler/shadow_chain.h crawler/page_status.h \
-   crawler/shadow_chain.h crawler/mosquito.h crawler/common.h \
-   crawler/robots.h crawler/task.h crawler/task_stream.h crawler/host4import.h \
-   crawler/page_status.h 
+crawlerh_HEADERS = crawler/common.h crawler/task_stream.h \
+   crawler/task.h crawler/shadow_chain.h crawler/page_status.h crawler/mosquito.h \
+   crawler/robots.h crawler/host4import.h
 crawlerhdir = $(includedir)/pa/crawler
-crawler_src = crawler/shadow_chain.cpp crawler/mosquito.cpp crawler/common.cpp \
+crawler_src = crawler/shadow_chain.cpp crawler/common.cpp crawler/mosquito.cpp \
    crawler/robots.cpp crawler/task.cpp crawler/task_stream.cpp crawler/host4import.cpp
 libpa_a_SOURCES += $(crawlerh_HEADERS) $(crawler_src)
 

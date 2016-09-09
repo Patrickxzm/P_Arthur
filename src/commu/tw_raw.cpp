@@ -109,21 +109,21 @@ istream& operator>>(istream &is, CTWRaw &raw)
     if (!is.read(buf.ptr(), length))
         return is;
     istringstream iss;
-        if (unzip_length >= 0)
-        {
+    if (unzip_length >= 0)
+    {
         cutem buf_unzip;
         unzip_length = unzip(buf.ptr(), length, buf_unzip, unzip_length);
         iss.str(string(buf_unzip.ptr(), unzip_length));
-        } else {
+    } else {
         buf.ptr()[length] = '\0';
         iss.str(string(buf.ptr(), length));
     }
     CHttpReply &reply = raw.reply;
     if (!(iss>>reply.status))
-        {
+    {
         is.setstate(std::ios::failbit);
         return is;
-        }
+    }
     CHeader header;
     reply.headers.clear();
     while (iss>>header)

@@ -9,18 +9,18 @@ using std::ostream;
 class CTWRaw
 {
 public:
-	CTWRaw()
-	{}
-	CTWRaw(const string &u, const string &ip, const CHttpReply &r);
+    CTWRaw()
+    {}
+    CTWRaw(const string &u, const string &ip, const CHttpReply &r);
         bool iconv(const string &target);
 public:
-	typedef map<string, string> ext_type;
-	ext_type ext;
-	string version;
-	string url;
-	string date;
-	string ipaddr;
-	CHttpReply reply;
+    typedef map<string, string> ext_type;
+    ext_type ext;
+    string version;
+    string url;
+    string date;
+    string ipaddr;
+    CHttpReply reply;
 private:
     bool get_charset_from_header(string &charset);
     void set_charset_to_header(const string &charset);

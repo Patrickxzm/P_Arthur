@@ -1,1 +1,1 @@
-mysql -u crawler -pcrawler2014 -h localhost crawler
+mysql -u crawler -pcrawler2014 -h pkugrids crawler

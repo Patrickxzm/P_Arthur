@@ -40,7 +40,7 @@ fi
 
 if cd $timedir
 then
-    scheduler_t --export-dir=$exportdir --db-host=maze63 --db-name=crawler \
-      --db-user=crawler --db-pass=crawler2008 --collect-outlinks \
+    scheduler_t --export-dir=$exportdir --db-host=pkugrids --db-name=crawler \
+      --db-user=crawler --db-pass=crawler2014 --collect-outlinks \
       --collect-overflow --collect-discard 2>&1 | tee scheduler.log
 fi

@@ -11,3 +11,4 @@ missing
 compile
 src/Makefile.in
 src/tags
+*~

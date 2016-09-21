@@ -2,6 +2,7 @@
 #include "arg.h"
 #include <sstream>
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
@@ -11,10 +12,9 @@ ostream&
 help(ostream& os)
 {
 	os<<"Put strings into a CStrSetShadow  or just make a test.\n"
-	  "Usage: Command [--file=] [--capacity=...] [--test] [--help|-h] \n"
+	  "Usage: Command [--file=] [--capacity=...] [--help|-h] \n"
 	  "\t--file= : name of file associated with the shadow.\n"
 	  "\t--capacity= :  required capacity. (default: "<<default_capacity<<")\n"
-	  "\t--test : Not put, Just a test. \n"
 	  "\t--help|-h : print this message.\n"
 	  "\tcin : strings to put into the shadow, one string per line.\n"
 	  "\tcout : strings put.\n"
@@ -39,7 +39,6 @@ try {
         }
 	else 
 		capacity = default_capacity;
-	bool test = arg.found("--test");
 	CStrSetShadow shadow;
 	int res;
         string fn;
@@ -49,18 +48,18 @@ try {
             res = shadow.open(0, capacity, CStrSetShadow::Create);
 	if (res == CStrSetShadow::Create)
 		clog<<"New Shadow file created."<<endl;
+	else if (res == CStrSetShadow::Attach)
+		clog<<"Shadow file Attached."<<endl;
+	else if (res == CStrSetShadow::Anonymous)
+		clog<<"Anonymous shadow used."<<endl;
+	else
+		assert(false);
 	clog<<"Shadow Capacity : "<<shadow.capacity()<<endl;
 	clog<<"Shadow Size : "<<shadow.size()<<endl;
 	clog<<"mapped file size : "<<shadow.memory_size()<<endl;
 	string line;
 	while (getline(cin, line))
 	{
-		if (test)
-		{
-			if (!shadow.has(line))
-				cout<<line<<endl;
-			continue;
-		}
 		switch (shadow.put(line))
 		{
 		case CStrSetShadow::putOK :

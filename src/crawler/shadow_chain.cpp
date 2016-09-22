@@ -87,6 +87,8 @@ CShadowChain::has(const string &str)
 	return false;
 }
 
+const int max_capacity=262144;
+
 bool
 CShadowChain::put(const string &str)
 {
@@ -96,7 +98,7 @@ CShadowChain::put(const string &str)
 	if (_chain.back()->full())
 	{//  Create a new shadow
 		unsigned capacity = _chain.back()->capacity();
-		unsigned new_capacity = capacity < 640000 ? capacity*10 : capacity;
+		unsigned new_capacity = capacity < max_capacity ? capacity*8 : capacity;
 		auto_ptr<CStrSetShadow> new_shadow(new CStrSetShadow);
 		int result = new_shadow->open((prefix+"."+tostring(_chain.size())).c_str()
 		   , new_capacity, CStrSetShadow::Create | CStrSetShadow::Overwrite);

@@ -585,8 +585,7 @@ CMosquito::parse(const CHttpReply &reply, int status)
 	
 	// links in <a>, <area> and <refresh>
 	auto_ptr<xmlChar_ptr_vector> links;
-	links.reset(xmlGetMultiStr(ctx.get(), BAD_CAST "//a/@href|//area/@href|"
-                                  "//img/@data-original|//img/@src"));
+	links.reset(xmlGetMultiStr(ctx.get(), BAD_CAST "//a/@href|//area/@href"));
 	xmlChar_scoped_ptr content;
 	content.reset(xmlGetStr(ctx.get()
 	   , BAD_CAST "//meta[@http-equiv='refresh']/@content"));
@@ -727,7 +726,7 @@ CMosquito::check(const CURL &newurl)
 {
 	unsigned r(0);
 	media_t type = newurl.mtype();
-	if (newurl.isAbs() && (type==m_text || type==m_image || type==m_unknown))
+	if (newurl.isAbs() && (type==m_text || type==m_unknown))
 		r |= right_type;
 	else
 		return r;

@@ -44,11 +44,11 @@ CPPFLAGS="-I$HOME/local/include -I$HOME/include -I/usr/local/include $CPPFLAGS"
 AC_ARG_ENABLE(debug,
   [  --enable-debug   Produce code more debugable with "-Wall -g -O0" option],
   [  CFLAGS="-Wall -g -O0"
-     CXXFLAGS="-Wall -g -O0"
+     CXXFLAGS="-Wall -g -O0 -std=c++11"
   ],
   [
      CFLAGS="-Wall $CFLAGS"
-     CXXFLAGS="-Wall $CXXFLAGS"
+     CXXFLAGS="-Wall $CXXFLAGS -std=c++11"
   ])
 
 

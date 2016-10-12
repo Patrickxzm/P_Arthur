@@ -15,6 +15,8 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <fstream>
+#include <sys/time.h>
+#include <sys/resource.h>
 using std::pair;
 using std::ostringstream;
 using std::endl;

@@ -12,11 +12,12 @@ ostream&
 help(ostream &os)
 {
     os<<"Tool for reading CTW_Raw pages and output them.\n"
-      "\tUsage: cmd [--prefix=...]* [--select=...] [--num=...] \n"
+      "\tUsage: cmd [--prefix=...]* [--select=...] [--from=...] [--num=...] \n"
       "\t\t  [--one-by-one | --package] [--to-code=...]\n"
       "\t\t  [--http-reply | --body-only] [-h|--help]\n"
       "\t\t--prefix= : select urls with such prefix.\n"
       "\t\t--select= : filename of selected url.\n"
+      "\t\t--from= : skip the first ? pages.\n"
       "\t\t--num= : output num pages at most.\n"
           "\t\t--to-code= : http-body will be converted to this charset.\n"
       "\t\t--one-by-one : Write output to seperated files with names:\n"
@@ -60,6 +61,9 @@ main(int argc, char* argv[])
     string strNum;
     if (arg.findLast("--num=", strNum))
         num = stoi(strNum);
+    int from=0;
+    if (arg.findLast("--from=", strNum))
+        from = stoi(strNum);
     string to_code = "";
     arg.findLast("--to-code=", to_code);
     bool oneByOne = arg.found("--one-by-one");
@@ -73,8 +77,10 @@ main(int argc, char* argv[])
         return -1;
     }
     CTWRaw raw;
-    for (unsigned nloop=0, i=0; (num<=0 || (int)i<num) && cin>>raw; nloop++)
+    for (unsigned nloop=0, count=0; (num<=0 || (int)count<num) && cin>>raw; nloop++)
     {
+        if (nloop < from)
+            continue;
         if (prefixes.size() > 0 || selects.size() > 0)
         {
             bool match = false;
@@ -89,7 +95,7 @@ main(int argc, char* argv[])
             if (!match && selects.find(raw.url)==selects.end())
                 continue;
         }
-        i++;
+        count++;
 
         if (to_code.length() > 0)
         raw.iconv(to_code);
@@ -104,12 +110,12 @@ main(int argc, char* argv[])
                     ext = CURL(raw.url).local_ext();
                 if (ext.empty())
                     ext = "html";
-                ofs.open((tostring(i)+"."+ext).c_str());
+                ofs.open((tostring(count)+"."+ext).c_str());
             }
             else if (http_reply)
-                ofs.open((tostring(i)+".reply").c_str());
+                ofs.open((tostring(count)+".reply").c_str());
             else
-                ofs.open((tostring(i)+".raw").c_str());
+                ofs.open((tostring(count)+".raw").c_str());
                os.rdbuf(ofs.rdbuf());
         }
         if (package)

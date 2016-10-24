@@ -18,7 +18,7 @@ namespace {
     // 224.0.0.0 to 224.0.0.255 are Link-local multicast Addresses.
     const char *default_mgroup_addr = "224.0.0.251";
     const char *default_mgroup_port = "9877";
-    const int maxline = 400056;
+    //const int maxline = 400056;
 };
 
 class CMsgNoRecord

@@ -491,21 +491,11 @@ CHostTable::loadShadow(unsigned host_id, const string& path, xmlNodePtr shadow_n
 	unsigned size, capacity;
 	Row row;
 	int nShadow = 0;
-	while (row=res.fetch_row())
+	while ((row=res.fetch_row()))
 	{
 		size = row["size"];
 		capacity = row["capacity"];
 		ID = row["ID"];
-#if 0
-		if (nshadow==0 && size>=capacity)
-		{// shadow overflow
-			CStrSetShadow shadow;
-			unsigned new_capacity = capacity < 640000 ? capacity*10 : capacity ;
-			shadow.open((path+"/"+visited_prefix+".latest").c_str(), new_capacity
-			   , CStrSetShadow::Create | CStrSetShadow::Overwrite);
-			nshadow++;
-		}
-#endif //0
 		// visited.0, visited.1, ..., visited.n, ...
 		string fn = path+"/"+visited_prefix+"."+tostring(nShadow);
 		ofstream ofs_visited(fn.c_str());

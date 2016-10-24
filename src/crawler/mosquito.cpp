@@ -611,12 +611,6 @@ CMosquito::parse(const CHttpReply &reply, int status)
 	// remember encoding of the previous page.
 	if (doc->encoding && xmlStrlen(doc->encoding)>0)
 		encoding = (char*)doc->encoding;
-#if 0 // Use libxml2 instead of htmlstruct package.
-	CHTMLRef htmlref(reply.body.c_str(), reply.body.length()
-             ... ... ... ...
-			result.outlinkSaved ++;
-	}
-#endif //0
 	return result;
 }
 

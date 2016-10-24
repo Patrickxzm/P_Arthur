@@ -27,7 +27,7 @@ private:
 	typedef std::vector<CRef*> Refbuf;
 	Refbuf refs;
 	bool in_script;
-	bool in_style;
+	//bool in_style;
 
 private:	
 	//CRef* do_tag(CTag *ptag); 

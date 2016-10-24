@@ -20,21 +20,21 @@
 #endif
 
 CHTMLRef::CHTMLRef(const char* html, int len, const char *baseurl)
-	:_lexic(html, len), ref(0), in_script(false), in_style(false)
+	:_lexic(html, len), ref(0), in_script(false)
 {
 	this->lexic = &_lexic;
 	base = new CURL(baseurl);
 }
 
 CHTMLRef::CHTMLRef(const string &html, const string &base)
-	:_lexic(html.c_str(), html.size()), ref(0), in_script(false), in_style(false)
+	:_lexic(html.c_str(), html.size()), ref(0), in_script(false)
 {
 	this->lexic = &_lexic;
 	this->base = new CURL(base);
 }
 
 CHTMLRef::CHTMLRef(const char* html, int len, const CURL &base)
-	:_lexic(html, len), ref(0), in_script(false), in_style(false)
+	:_lexic(html, len), ref(0), in_script(false)
 {
 	this->lexic = &_lexic;
 	this->base = new CURL(base);
@@ -42,7 +42,7 @@ CHTMLRef::CHTMLRef(const char* html, int len, const CURL &base)
 
 
 CHTMLRef::CHTMLRef(CHTMLLexic *lexic, const string &baseurl)
-	:ref(0), in_script(false), in_style(false)
+	:ref(0), in_script(false)
 {
 	assert(lexic!=NULL);
 	this->lexic = lexic;

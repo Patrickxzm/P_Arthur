@@ -59,7 +59,7 @@ class is_uric_no_escape
 {
 public:
 	is_uric_no_escape(){}
-	void * operator()(int ch);
+	bool operator()(int ch);
 private:
 	static const int size = 128;
 	static unsigned char map[size];

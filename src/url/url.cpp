@@ -427,11 +427,13 @@ unsigned char is_uric_no_escape::map[128] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0,  /* 70-7F*/
 };
 
-void*
+bool
 is_uric_no_escape::operator()(int ch)
 {
 	if (ch < 0 || ch > 127)
-		return (void*) 0;
-	return (void*)(int)(map[ch]);
+		return false;
+        if (1 == map[ch])
+		return true;
+	return false;
 }
 

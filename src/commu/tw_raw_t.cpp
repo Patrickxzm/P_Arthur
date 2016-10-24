@@ -4,6 +4,7 @@
 #include "http_reply.h"
 #include "url/url.h"
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <set>
 
@@ -57,11 +58,11 @@ main(int argc, char* argv[])
         while (ifs>>urlstr)
             selects.insert(urlstr);
     }
-    int num=0;
     string strNum;
+    unsigned num=numeric_limits<unsigned>::max();
     if (arg.findLast("--num=", strNum))
         num = stoi(strNum);
-    int from=0;
+    unsigned from=0;
     if (arg.findLast("--from=", strNum))
         from = stoi(strNum);
     string to_code = "";
@@ -76,9 +77,11 @@ main(int argc, char* argv[])
           <<endl;
         return -1;
     }
-    CTWRaw raw;
-    for (unsigned nloop=0, count=0; (num<=0 || (int)count<num) && cin>>raw; nloop++)
+    for (unsigned nloop=0, count=0; count<num;  nloop++)
     {
+        CTWRaw raw;
+        if (!(cin>>raw))
+		break;
         if (nloop < from)
             continue;
         if (prefixes.size() > 0 || selects.size() > 0)

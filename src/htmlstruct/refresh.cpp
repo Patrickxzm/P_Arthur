@@ -96,12 +96,12 @@ char* url_in_refresh(const char* content)
 
 void trimblank(char* url)
 {
-	if(url == NULL || url =='\0')
+	if(url == NULL || *url =='\0')
 		return;
 	
 	int len = strlen(url);
 	int tail = len -1 ; //the last character before '\0'
-	while ((url[tail] == ' ' || url[tail] == 9 || url[tail] == '\n') && tail > 0)
+	while (tail>0 && isspace(url[tail]))
 		tail--;
 	url[tail+1] = '\0';
 }

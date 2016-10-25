@@ -18,6 +18,7 @@ help(ostream &os)
 	os<<"Extract content from TWR input, with xpath expression.\n"
 	  "\tUsage: Cmd --expr=... [-h|--help]\n"
           "\t\t --expr= : xpath expression\n"
+          "\t\t --show-url : print the url of input raw\n"
 	  "\t\t -h|--help : print this message.\n"
 	  <<endl;
 	return os;
@@ -34,6 +35,7 @@ try {
 		help(cout);
 		return 1;
 	}
+	bool show_url = arg.found("--show-url");
 	string expr;
         if (!arg.findLast("--expr=", expr) || expr.empty())
 	{
@@ -44,10 +46,14 @@ try {
 	CTWRaw raw;
 	while (cin>>raw)
 	{
+		if (raw.reply.status.code < 200 || raw.reply.status.code >= 300)
+			continue;
 		scoped_ptr4c<xmlDoc, xmlFreeDoc> doc(getXML(raw));
 		if (!doc->encoding || xmlStrlen(doc->encoding)==0)
 			cerr<<"Warrning: Can not detect document encoding!"<<endl;
 		vector<string> contents = extract(doc.get(), expr);
+		if (show_url)
+			cout<<"--show-url: "<<raw.url<<endl;
 		for (int i=0; i<contents.size(); i++)
 		{
 			cout<<contents[i]<<endl;

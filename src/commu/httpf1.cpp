@@ -84,7 +84,7 @@ try {
     if (arg.findLast("--interval=", strNum))
         interval = stoul(strNum);
     unsigned retry_interval = 600;
-    if (arg.findLast("--retry-interval", strNum))
+    if (arg.findLast("--retry-interval=", strNum))
         retry_interval = stoul(strNum);
     bool keep_alive = !arg.found("--disable-keep-alive");
 	string host;

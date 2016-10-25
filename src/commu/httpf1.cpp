@@ -109,16 +109,20 @@ try {
 		}
 		if (host != url.host() || port != url.port())
 		{
-			host = url.host();
-			port = url.port();
-			if (!hostaddr.DNS(host.c_str()))
-			{
-				cerr<<"DNS failed!"<<host<<endl;
-				return -3;
-			}
 			if (client.is_open())
 				client.close();
 		}
+		if (host != url.host())
+		{
+			host = url.host();
+			if (!hostaddr.DNS(host.c_str()))
+			{
+				cerr<<"DNS failed!"<<host<<endl;
+				continue;
+			}
+		}
+		port = url.port();
+
 		CHttpRequest request;
 		if (!cookie_file.empty())
 			request.init(url, method.c_str(), &cookies, keep_alive);

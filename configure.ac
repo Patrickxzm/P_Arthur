@@ -37,7 +37,11 @@ for mylib in /usr/lib /usr/lib64 /usr/local/lib /usr/local/lib64 $HOME/lib $HOME
 		LDFLAGS="-L$mylib -Wl,-rpath,$mylib $LDFLAGS"
 	fi
 done
-CPPFLAGS="-I$HOME/local/include -I$HOME/include -I/usr/local/include $CPPFLAGS"
+for myinc in $HOME/local/include $HOME/include /usr/local/include; do
+	if test -d $myinc; then
+		CPPFLAGS="-I$myinc $CPPFLAGS"
+        fi
+done
 
 
 ## Checks for user's command line arguments

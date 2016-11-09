@@ -14,10 +14,9 @@ public:
 	{}
 	virtual ~CHttpRequest()
 	{}
-	CHttpRequest(const CURL& url);
-	CHttpRequest(const CURL& url, const char* method 
-		, const CCookies *cookies, bool keep_alive);
-	int init(const CURL& url, const char* method 
+	CHttpRequest(const CURL& url, const string& method="GET"
+		, const CCookies *cookies=0, bool keep_alive=true);
+	int init(const CURL& url, const string& method
 		, const CCookies *cookies, bool keep_alive);
 	const string &get_method() const
 	{

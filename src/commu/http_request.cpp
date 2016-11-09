@@ -16,12 +16,7 @@
 using std::invalid_argument;
 using std::ostringstream;
 
-CHttpRequest::CHttpRequest(const CURL& url)
-{
-	init(url, "GET", 0, true);
-}
-
-CHttpRequest::CHttpRequest(const CURL& url, const char *method
+CHttpRequest::CHttpRequest(const CURL& url, const string& method
 		,const CCookies *cookies, bool keep_alive)
 {
 	init(url, method, cookies, keep_alive);
@@ -31,7 +26,7 @@ string
 CHttpRequest::userAgent("P_Arthur.2");
 
 int
-CHttpRequest::init(const CURL& url, const char *method
+CHttpRequest::init(const CURL& url, const string& method
 		,const CCookies *cookies, bool keep_alive)
 {
 	this->method = method;

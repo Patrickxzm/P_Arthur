@@ -115,7 +115,7 @@ try {
 		if (host != url.host())
 		{
 			host = url.host();
-			if (!hostaddr.DNS(host.c_str()))
+			if (!hostaddr.DNS(host))
 			{
 				cerr<<"DNS failed!"<<host<<endl;
 				continue;
@@ -125,9 +125,9 @@ try {
 
 		CHttpRequest request;
 		if (!cookie_file.empty())
-			request.init(url, method.c_str(), &cookies, keep_alive);
+			request.init(url, method, &cookies, keep_alive);
 		else 
-			request.init(url, method.c_str(), 0, keep_alive);
+			request.init(url, method, 0, keep_alive);
 		CHttpReply reply(request.get_method());
 		int ret;
 		for (unsigned i=0; i<3; i++)

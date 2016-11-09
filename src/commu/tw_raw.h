@@ -13,6 +13,7 @@ public:
     {}
     CTWRaw(const string &u, const string &ip, const CHttpReply &r);
         bool iconv(const string &target);
+    explicit operator bool() const { return url.size()>0; }
 public:
     typedef map<string, string> ext_type;
     ext_type ext;

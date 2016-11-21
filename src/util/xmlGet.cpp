@@ -36,32 +36,6 @@ getnodeset (xmlXPathContextPtr ctx, const xmlChar *xpath, xmlNodePtr curr)
 	return result;
 }
 
-#if 0
-bool xmlGetInt (xmlXPathContextPtr ctx, const xmlChar *xpath, int& result, xmlNodePtr curr)
-{
-	xmlString s;
-	if (xmlGetStr(ctx, xpath, s, curr))
-	{
-		result = atoi((char*)s.c_str());
-		return true;
-	}
-	return false;
-}
-#endif //0
-
-#if 0
-bool 
-getStr(xmlXPathContextPtr ctx, const xmlChar *xpath, string &result, xmlNodePtr curr)
-{
-	auto_ptr<xmlChar_ptr_vector> v;
-	v.reset(xmlGetMultiStr(ctx, xpath, 1, curr));
-	if (v->empty() || (*v)[0]==0)
-		return false;
-	result = (const char*)(*v)[0];
-	return true;
-}
-#endif //0
-
 xmlChar*
 xmlGetStr(xmlXPathContextPtr ctx, const xmlChar *xpath, xmlNodePtr curr)
 {
@@ -85,13 +59,7 @@ xmlGetMultiStr(xmlXPathContextPtr ctx, const xmlChar *xpath, int num, xmlNodePtr
 	for (int i=0; i<nodeset->nodeNr && (num<=0 || i<num); i++)
 	{
 		xmlNodePtr node = nodeset->nodeTab[i];
-		//xmlChar_scoped_ptr str(xmlNodeListGetString(doc, node->xmlChildrenNode, 1));
 		v->push_back(xmlNodeGetContent(node));
-#if 0  // change return value from vector<string> to xmlChar_ptr_vector*
-		xmlChar_scoped_ptr str(xmlNodeGetContent(node));
-		if (str.get())
-			v.push_back((char*)str.get());
-#endif //0
 	}
 	return v;
 }
@@ -170,50 +138,6 @@ operator<<(ostream& os, xmlNodePtr node)
 	}
 	return os;
 }
-
-#if 0
-htmlDocPtr 
-htmlReadDoc2(const xmlChar * cur, const char* URL, const char * encoding, int options)
-{
-	string encode;
-	if (encoding != 0 && strlen(encoding)>0)
-		encode = encoding;
-	if (encode.size() > 0)
-		return htmlReadDoc(cur, URL, encode.c_str()
-			, options);
-
-	// try to find the encoding from the html document.
-	scoped_ptr4c<xmlDoc, xmlFreeDoc> doc_utf8; //default "utf8"
-	doc_utf8.reset(htmlReadDoc(cur, URL, 0, options)); 
-	if (!doc_utf8.get())
-		return 0;
-	if (doc_utf8->encoding != 0 && doc_utf8->encoding[0]!='\0')
-		encode = (char*)doc_utf8->encoding;
- 	if (encode.empty())
-	{ // Make a guess : "gbk" !
-		scoped_ptr4c<xmlDoc, xmlFreeDoc> doc_gbk;
-		scoped_ptr4c<xmlParserCtxt, htmlFreeParserCtxt> ctxt;
-		ctxt.reset(htmlNewParserCtxt());
-		//doc_gbk.reset(
-		 //htmlCtxtReadDoc(ctxt.get(), cur, URL, "gbk", options)); 
-		doc_gbk.reset(
-		   htmlReadDoc(cur, URL, "gbk", options)); 
-		if (!doc_gbk.get())
-			return 0;
-		if (ctxt->errNo == XML_ERR_INVALID_ENCODING) // guess failed!
-			return doc_utf8.release();
-		else
-			return doc_gbk.release();
-	}
-	else if (strcasecmp(encode.c_str(), "utf8")==0)
-		return doc_utf8.release();
-	else { // Read document with the encoding just found.
-		if (strcasecmp(encode.c_str(), "gb2312") == 0)
-			encode = "gbk"; // gb2312 < gbk < gb18030
-		return htmlReadDoc(cur, URL, encode.c_str(), options);
-	}
-}
-#endif //0
 
 namespace {
 	// There is a similar function in libxml2
@@ -319,42 +243,3 @@ register_namespaces(xmlXPathContextPtr xpathCtx, const char* nsfile)
 	}
 	return 0;
 }
-
-#if 0  // replaced by htmlFindEncoding2() + htmlReadMemory()
-htmlDocPtr 
-htmlReadMemory2(const char* buffer, int size, const char* URL
-   , const char * encoding, int options)
-{
-	// disable error output
-	//CRedirect error_output(2);
-	//error_output.redirect("/dev/null");
-	CIconvTester test(buffer, size);
-	string oname;
-	if (encoding != 0 && strlen(encoding)>0)
-	{
-		oname = test.try_encode(encoding);
-		if (oname.size() > 0)
-			return htmlReadMemory(buffer, size, URL, oname.c_str(), options);
-	}
-	// try to find the encoding from the html document.
-	scoped_ptr4c<char, myFree<char> > encode_find;
-	encode_find.reset(htmlFindEncoding(buffer, size));
-	if (encode_find.get())
-	{
-		oname = test.try_encode(encode_find.get());
-		if (oname.size() > 0)
-			return htmlReadMemory(buffer, size, URL, oname.c_str(), options);
-	}
-	oname = test.try_encode("gb18030");
-	if (oname.size() > 0)
-		return htmlReadMemory(buffer, size, URL, oname.c_str(), options);
-	oname = test.try_encode("utf-8");
-	if (oname.size() > 0)
-		return htmlReadMemory(buffer, size, URL, oname.c_str(), options);
-	return 0;
-	if (test.nearest().size() > 0)
-		return htmlReadMemory(buffer, size, URL, test.nearest().c_str(), options);
-	return 0;
-}
-#endif //0
-

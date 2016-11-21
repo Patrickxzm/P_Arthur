@@ -37,17 +37,6 @@ toupper(string const &s)
 	return res;
 }
 
-string
-tostring(int i)
-{
-	// 3 : one for sign, one for terminated '\0', and one more digit.
-	const int buf_size = numeric_limits<int>::digits10+3;
-	char buf[buf_size];
-	char* ret = intoa(i, buf, buf_size);
-	assert(ret != 0);
-	return string(buf);
-}
-
 int 
 file_size(const string &file_name)
 {

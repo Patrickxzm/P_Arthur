@@ -53,9 +53,9 @@ public:
         {
             if (list.size() > 0)
                 list += ", ";
-            list += tostring(startNo);
+            list += to_string(startNo);
             if (endNo > startNo)
-                list += '-'+tostring(endNo);
+                list += '-'+to_string(endNo);
             startNo =  endNo = msgNo;
         }
         return ;

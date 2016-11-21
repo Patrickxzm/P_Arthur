@@ -113,12 +113,12 @@ main(int argc, char* argv[])
                     ext = CURL(raw.url).local_ext();
                 if (ext.empty())
                     ext = "html";
-                ofs.open((tostring(count)+"."+ext).c_str());
+                ofs.open((to_string(count)+"."+ext).c_str());
             }
             else if (http_reply)
-                ofs.open((tostring(count)+".reply").c_str());
+                ofs.open((to_string(count)+".reply").c_str());
             else
-                ofs.open((tostring(count)+".raw").c_str());
+                ofs.open((to_string(count)+".raw").c_str());
                os.rdbuf(ofs.rdbuf());
         }
         if (package)

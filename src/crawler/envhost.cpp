@@ -20,6 +20,7 @@ using std::ofstream;
 using std::runtime_error;
 using std::endl;
 using std::flush;
+using std::to_string;
 
 using namespace mysqlpp;
 
@@ -99,7 +100,7 @@ CHostTable::saveShadowChain(const string &path, const string& prefix, const stri
 	}
 	if (nShadow > 0)
 	{
-		string shadow_fn = path + "/" + prefix + "." + tostring(nShadow-1);
+		string shadow_fn = path + "/" + prefix + "." + to_string(nShadow-1);
 		CStrSetShadow shadow;
 		unsigned capacity=0;
 		if (shadow.open(shadow_fn.c_str(), capacity) != CStrSetShadow::Attach)
@@ -111,8 +112,8 @@ CHostTable::saveShadowChain(const string &path, const string& prefix, const stri
 		if ((int)shadow.size() > last_size)  // new items shadowed.
 			saveShadow(shadow_fn.c_str(), last_ID, host, port);
 	}
-	for ( ;file_size(path+"/"+prefix+"."+tostring(nShadow)) >= 0; nShadow++)
-		saveShadow((path+"/"+prefix+"."+tostring(nShadow)).c_str(), -1, host, port);
+	for ( ;file_size(path+"/"+prefix+"."+to_string(nShadow)) >= 0; nShadow++)
+		saveShadow((path+"/"+prefix+"."+to_string(nShadow)).c_str(), -1, host, port);
 	return nShadow;
 }
 
@@ -497,7 +498,7 @@ CHostTable::loadShadow(unsigned host_id, const string& path, xmlNodePtr shadow_n
 		capacity = row["capacity"];
 		ID = row["ID"];
 		// visited.0, visited.1, ..., visited.n, ...
-		string fn = path+"/"+visited_prefix+"."+tostring(nShadow);
+		string fn = path+"/"+visited_prefix+"."+to_string(nShadow);
 		ofstream ofs_visited(fn.c_str());
 		if (!ofs_visited)
 			throw runtime_error("Can not open shadow file: "+fn);
@@ -508,17 +509,17 @@ CHostTable::loadShadow(unsigned host_id, const string& path, xmlNodePtr shadow_n
 			throw runtime_error("CHostTable::loadShadow():Can not write shadow file.");
  		nShadow++;
 	}
-	xmlNewChild(shadow_node, NULL, BAD_CAST "Number", BAD_CAST tostring(nShadow).c_str());
+	xmlNewChild(shadow_node, NULL, BAD_CAST "Number", BAD_CAST to_string(nShadow).c_str());
 	if (nShadow > 0)
 	{
 		xmlNodePtr lastOne = xmlNewChild(shadow_node, NULL, BAD_CAST "LastOne", NULL);
-		xmlNewChild(lastOne, NULL, BAD_CAST "ID", BAD_CAST tostring(ID).c_str());
+		xmlNewChild(lastOne, NULL, BAD_CAST "ID", BAD_CAST to_string(ID).c_str());
 		xmlNewChild(lastOne, NULL, BAD_CAST "capacity"
-		   , BAD_CAST tostring(capacity).c_str());
+		   , BAD_CAST to_string(capacity).c_str());
 		xmlNewChild(lastOne, NULL, BAD_CAST "size"
-		   , BAD_CAST tostring(size).c_str());
+		   , BAD_CAST to_string(size).c_str());
 	}
-	string fn = path+"/"+visited_prefix+"."+tostring(nShadow);
+	string fn = path+"/"+visited_prefix+"."+to_string(nShadow);
 	if (-1 == unlink(fn.c_str()) && errno != ENOENT)
 	{
 		ostringstream oss;

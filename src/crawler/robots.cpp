@@ -21,7 +21,7 @@ CRobots::init(const string &host, int port)
 {
 	f_init = true;
 	clear();
-	CHttp http("http://"+host+":"+tostring(port)+"/robots.txt");
+	CHttp http("http://"+host+":"+std::to_string(port)+"/robots.txt");
 	http.timeout(45, 45);
 	CHttp::result_t result = http.sfetch();
 	if (result == CHttp::OK)

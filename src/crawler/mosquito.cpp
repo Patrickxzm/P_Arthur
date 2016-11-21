@@ -28,6 +28,7 @@ using std::logic_error;
 using std::runtime_error;
 using std::ostringstream;
 using std::ifstream;
+using std::to_string;
 
 namespace {
 	class longer
@@ -149,20 +150,6 @@ CMosquito::loadEnv(CEnvCrawler &env)
 	return;
 }
 
-#if 0 // moved to loadEnv(env)
-bool
-CMosquito::saveLinkOf(const string &host, int port)
-{
-	string hostport = host;
-	if (port != 80)
-		hostport += ':'+tostring(port);
-	if (outlink_save.find(hostport) != outlink_save.end())
-		return false;
-	outlink_save[hostport];
-	return true;
-}
-#endif //0
-
 bool 
 CMosquito::getTask(CTaskQue &blink, CTaskQue &visited, CTaskQue &unvisit)
 {
@@ -235,7 +222,7 @@ CMosquito::run()
 		}
 		if (my_log.get()) 
                     (*my_log)<<this->task.localstr<<endl;
-		this->current.init("http://"+host+":"+tostring(port)
+		this->current.init("http://"+host+":"+to_string(port)
 		   +this->task.localstr);
 		CHttpReply reply;
 		reply.set_max_size(2000000);  // 2M maximim a page.
@@ -624,10 +611,10 @@ CMosquito::report() const
 
 	xmlNewChild(root_node, NULL, BAD_CAST "host", BAD_CAST host.c_str());
 	if (port != 80)
-		xmlNewChild(root_node, NULL, BAD_CAST "port", BAD_CAST tostring(port).c_str());
+		xmlNewChild(root_node, NULL, BAD_CAST "port", BAD_CAST to_string(port).c_str());
 	time_t now = time(0);
 	xmlNewChild(root_node, NULL, BAD_CAST "issueTime", BAD_CAST ctime(&now));
-	xmlNewChild(root_node, NULL, BAD_CAST "numIPAddr", BAD_CAST tostring(hostaddr.naddr()).c_str());
+	xmlNewChild(root_node, NULL, BAD_CAST "numIPAddr", BAD_CAST to_string(hostaddr.naddr()).c_str());
 	const xmlChar * server_status;
 	switch (fetch_result)
 	{
@@ -645,28 +632,28 @@ CMosquito::report() const
 		break;
 	}
 	xmlNewChild(root_node, NULL, BAD_CAST"ServerStatus", server_status);
-	xmlNewChild(root_node, NULL, BAD_CAST"TotalRetry", BAD_CAST tostring(total_retry).c_str());
+	xmlNewChild(root_node, NULL, BAD_CAST"TotalRetry", BAD_CAST to_string(total_retry).c_str());
 	xmlNewChild(root_node, NULL, BAD_CAST"NewlyShadowed"
-	   , BAD_CAST tostring(shadows.size()-shadow_size).c_str());
+	   , BAD_CAST to_string(shadows.size()-shadow_size).c_str());
 	xmlNodePtr blink_url = xmlNewChild(root_node, NULL, BAD_CAST "BlinkURL", NULL);
-	xmlNewChild(blink_url, NULL, BAD_CAST "GET", BAD_CAST tostring(blink_get).c_str());
-	xmlNewChild(blink_url, NULL, BAD_CAST "TRY", BAD_CAST tostring(blink_try).c_str());
-	xmlNewChild(blink_url, NULL, BAD_CAST "Discard", BAD_CAST tostring(hubActive.blink_discard).c_str());
-	xmlNewChild(blink_url, NULL, BAD_CAST "Overflow", BAD_CAST tostring(hubActive.blink_overflow).c_str());
-	xmlNewChild(blink_url, NULL, BAD_CAST "Total", BAD_CAST tostring(blink_total).c_str());
+	xmlNewChild(blink_url, NULL, BAD_CAST "GET", BAD_CAST to_string(blink_get).c_str());
+	xmlNewChild(blink_url, NULL, BAD_CAST "TRY", BAD_CAST to_string(blink_try).c_str());
+	xmlNewChild(blink_url, NULL, BAD_CAST "Discard", BAD_CAST to_string(hubActive.blink_discard).c_str());
+	xmlNewChild(blink_url, NULL, BAD_CAST "Overflow", BAD_CAST to_string(hubActive.blink_overflow).c_str());
+	xmlNewChild(blink_url, NULL, BAD_CAST "Total", BAD_CAST to_string(blink_total).c_str());
 	xmlNodePtr old_url = xmlNewChild(root_node, NULL, BAD_CAST "OldURL", NULL);
-	xmlNewChild(old_url, NULL, BAD_CAST "GET", BAD_CAST tostring(old_get).c_str());
-	xmlNewChild(old_url, NULL, BAD_CAST "TRY", BAD_CAST tostring(old_try).c_str());
-	xmlNewChild(old_url, NULL, BAD_CAST "Changed", BAD_CAST tostring(old_changed).c_str());
-	xmlNewChild(old_url, NULL, BAD_CAST "Discard", BAD_CAST tostring(hubActive.old_discard).c_str());
-	xmlNewChild(old_url, NULL, BAD_CAST "Overflow", BAD_CAST tostring(hubActive.old_overflow).c_str());
-	xmlNewChild(old_url, NULL, BAD_CAST "Total", BAD_CAST tostring(old_total).c_str());
+	xmlNewChild(old_url, NULL, BAD_CAST "GET", BAD_CAST to_string(old_get).c_str());
+	xmlNewChild(old_url, NULL, BAD_CAST "TRY", BAD_CAST to_string(old_try).c_str());
+	xmlNewChild(old_url, NULL, BAD_CAST "Changed", BAD_CAST to_string(old_changed).c_str());
+	xmlNewChild(old_url, NULL, BAD_CAST "Discard", BAD_CAST to_string(hubActive.old_discard).c_str());
+	xmlNewChild(old_url, NULL, BAD_CAST "Overflow", BAD_CAST to_string(hubActive.old_overflow).c_str());
+	xmlNewChild(old_url, NULL, BAD_CAST "Total", BAD_CAST to_string(old_total).c_str());
 	xmlNodePtr new_url = xmlNewChild(root_node, NULL, BAD_CAST "NewURL", NULL);
-	xmlNewChild(new_url, NULL, BAD_CAST "GET", BAD_CAST tostring(new_get).c_str());
-	xmlNewChild(new_url, NULL, BAD_CAST "TRY", BAD_CAST tostring(new_try).c_str());
-	xmlNewChild(new_url, NULL, BAD_CAST "Discard", BAD_CAST tostring(hubActive.new_discard).c_str());
-	xmlNewChild(new_url, NULL, BAD_CAST "Overflow", BAD_CAST tostring(hubActive.new_overflow).c_str());
-	xmlNewChild(new_url, NULL, BAD_CAST "Total", BAD_CAST tostring(new_total).c_str());
+	xmlNewChild(new_url, NULL, BAD_CAST "GET", BAD_CAST to_string(new_get).c_str());
+	xmlNewChild(new_url, NULL, BAD_CAST "TRY", BAD_CAST to_string(new_try).c_str());
+	xmlNewChild(new_url, NULL, BAD_CAST "Discard", BAD_CAST to_string(hubActive.new_discard).c_str());
+	xmlNewChild(new_url, NULL, BAD_CAST "Overflow", BAD_CAST to_string(hubActive.new_overflow).c_str());
+	xmlNewChild(new_url, NULL, BAD_CAST "Total", BAD_CAST to_string(new_total).c_str());
 	ofstream outlinks(out_neighbor_file);
 	if (!outlinks)
 	{
@@ -745,7 +732,7 @@ CMosquito::saveOutlink(const CURL &newurl)
 {
 	string hostport = newurl.host();
 	if (newurl.port() != 80)
-		hostport += ':'+tostring(newurl.port());		
+		hostport += ':'+to_string(newurl.port());
 	map<string, int>::iterator it = outlink_count.find(hostport);
 	if (it==outlink_count.end())
 		outlink_count[hostport] = 1;

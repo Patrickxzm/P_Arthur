@@ -8,7 +8,6 @@ using std::string;
 
 string tolower(string const &s);
 string toupper(string const &s);
-string tostring(int i);
 
 /* ON unix/linux/mac with x86:  wc_code should be UCS-4LE, 
  * UTF-32LE is the same.

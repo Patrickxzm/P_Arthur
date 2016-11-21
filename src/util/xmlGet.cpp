@@ -123,7 +123,7 @@ operator<<(ostream& os, xmlAttrPtr attr)
 		os<<"\"";
 		break;
 	default :
-		throw runtime_error("Unknow type for xmlAttr:"+tostring(attr->type));
+		throw runtime_error("Unknow type for xmlAttr:"+std::to_string(attr->type));
 	}
 	return os;
 }

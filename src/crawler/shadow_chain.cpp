@@ -23,11 +23,11 @@ CShadowChain::~CShadowChain()
 int 
 CShadowChain::open(const string &prefix, unsigned hintCapacity)
 {
-	while (file_size(prefix+"."+tostring(_chain.size())) >= 0)
+	while (file_size(prefix+"."+std::to_string(_chain.size())) >= 0)
 	{
 		auto_ptr<CStrSetShadow> shadow(new CStrSetShadow);
 		unsigned capacity;
-		int result = shadow->open((prefix+"."+tostring(_chain.size())).c_str(), capacity);
+		int result = shadow->open((prefix+"."+std::to_string(_chain.size())).c_str(), capacity);
 		if (result != CStrSetShadow::Attach)
 		{
 			ostringstream oss;
@@ -66,7 +66,7 @@ CShadowChain::close()
 {
 	for (size_t i=0; i<_chain.size(); i++)
 		delete(_chain[i]);
-	if (prefix.size() > 0 && -1 == unlink((prefix+"."+tostring(_chain.size())).c_str()) 
+	if (prefix.size() > 0 && -1 == unlink((prefix+"."+std::to_string(_chain.size())).c_str())
 	   && errno != ENOENT)
 	{
 		ostringstream oss;
@@ -100,7 +100,7 @@ CShadowChain::put(const string &str)
 		unsigned capacity = _chain.back()->capacity();
 		unsigned new_capacity = capacity < max_capacity ? capacity*8 : capacity;
 		auto_ptr<CStrSetShadow> new_shadow(new CStrSetShadow);
-		int result = new_shadow->open((prefix+"."+tostring(_chain.size())).c_str()
+		int result = new_shadow->open((prefix+"."+std::to_string(_chain.size())).c_str()
 		   , new_capacity, CStrSetShadow::Create | CStrSetShadow::Overwrite);
 		if (result < 0)
 		{

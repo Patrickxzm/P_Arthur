@@ -27,6 +27,7 @@ using std::runtime_error;
 using std::ios;
 using std::ofstream;
 using std::ifstream;
+using std::to_string;
 using namespace mysqlpp;
 
 const char* flag_keep_env = "keep_the_env";
@@ -298,14 +299,14 @@ CScheduler::exec_crawler(const CEnv &env, bool debug)
 	vector<string> v;
 	v.push_back(prog);
 	v.push_back("--host="+env.host);
-	v.push_back("--port="+tostring(env.port));
+	v.push_back("--port="+to_string(env.port));
 	v.push_back(string("--lpath-file=")+root_file);
 	v.push_back(string("--visited-prefix=")+visited_prefix);
 	v.push_back(string("--cookie-file=")+cookie_fn);
 	if (debug)
 		v.push_back("--debug");
-	v.push_back("--npages="+tostring(env.pageNum));
-	v.push_back("--interval="+tostring(env.interval));
+	v.push_back("--npages="+to_string(env.pageNum));
+	v.push_back("--interval="+to_string(env.interval));
 	for (set<string>::const_iterator cit=env.save_link_of.begin()
 	  ; cit != env.save_link_of.end(); cit ++) 
 		v.push_back("--save-link="+*cit);

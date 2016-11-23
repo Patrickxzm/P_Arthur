@@ -133,7 +133,6 @@ convert_charset(const char* from, const char* to, const string &in
 wstring 
 wc(const char* mb_code, const string& in, const char* wc_code)
 {
-	size_t result;
 	iconv_t env;
 	env = iconv_open(wc_code, mb_code);
 	char* pin = (char*)in.c_str();
@@ -141,7 +140,7 @@ wc(const char* mb_code, const string& in, const char* wc_code)
 	wchar_t wcs[leftIn];
 	char* pout = (char*)wcs;
 	size_t leftOut = sizeof(wcs);
-	result = iconv(env, &pin, &leftIn, &pout, &leftOut);
+	iconv(env, &pin, &leftIn, &pout, &leftOut);
 	iconv_close(env);
 	return wstring(wcs, (sizeof(wcs) - leftOut)/sizeof(wchar_t));
 }
@@ -149,7 +148,6 @@ wc(const char* mb_code, const string& in, const char* wc_code)
 string 
 mb(const char* mb_code, const wstring& in, const char* wc_code)
 {
-	size_t result;
 	iconv_t env;
 	env = iconv_open(mb_code, wc_code);
 	char* pin = (char*)in.c_str();
@@ -157,7 +155,7 @@ mb(const char* mb_code, const wstring& in, const char* wc_code)
 	size_t leftOut = leftIn;
 	char outBuf[leftOut];
 	char* pout = outBuf;
-	result = iconv(env, &pin, &leftIn, &pout, &leftOut);
+	iconv(env, &pin, &leftIn, &pout, &leftOut);
 	iconv_close(env);
 	return string(outBuf, pout - outBuf);
 }

@@ -133,7 +133,6 @@ convert_charset(const char* from, const char* to, const string &in
 wstring 
 wc(const char* mb_code, const string& in, const char* wc_code)
 {
-	size_t result;
 	iconv_t env;
 	env = iconv_open(wc_code, mb_code);
 	char* pin = (char*)in.c_str();
@@ -149,7 +148,6 @@ wc(const char* mb_code, const string& in, const char* wc_code)
 string 
 mb(const char* mb_code, const wstring& in, const char* wc_code)
 {
-	size_t result;
 	iconv_t env;
 	env = iconv_open(mb_code, wc_code);
 	char* pin = (char*)in.c_str();

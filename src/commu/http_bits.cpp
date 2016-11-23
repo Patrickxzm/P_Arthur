@@ -69,8 +69,8 @@ istream& operator>>(istream& is, CHeader& hea)
 		is.setstate(std::ios::failbit);
 		return is;
 	}
-	if (line[line.size() - 1] == '\r')
-		line.erase(line.size() - 1);
+	if (line.back() == '\r')
+		line.pop_back();
 	istringstream iss(line);
 	if (!getline(iss, hea.name, ':'))
 	{

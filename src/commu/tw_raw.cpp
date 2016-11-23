@@ -5,6 +5,7 @@
 #include "util/charset.h"
 #include <ctime>
 #include <sstream>
+#include <memory>
 
 using std::gmtime;
 using std::strftime;
@@ -104,9 +105,8 @@ istream& operator>>(istream &is, CTWRaw &raw)
         return is;
     string empty;
     getline(is, empty);
-    cutem buf;
-    buf.reserve(length);
-    if (!is.read(buf.ptr(), length))
+    std::unique_ptr<char[]> buf(new char[length]);
+    if (!is.read(buf.get(), length))
         return is;
     istringstream iss;
     if (unzip_length >= 0)
@@ -115,8 +115,7 @@ istream& operator>>(istream &is, CTWRaw &raw)
         unzip_length = unzip(buf.ptr(), length, buf_unzip, unzip_length);
         iss.str(string(buf_unzip.ptr(), unzip_length));
     } else {
-        buf.ptr()[length] = '\0';
-        iss.str(string(buf.ptr(), length));
+        iss.str(string(buf.get(), length));
     }
     CHttpReply &reply = raw.reply;
     if (!(iss>>reply.status))

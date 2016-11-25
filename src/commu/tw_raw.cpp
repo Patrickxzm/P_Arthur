@@ -26,7 +26,7 @@ CTWRaw::CTWRaw(const string &u, const string &ip, const CHttpReply &r)
     time(&timev);
     // rfc1123-date:
     strftime(buf, bufsize, "%a, %d %b %Y %H:%M:%S GMT", gmtime(&timev));
-    date=buf;
+    this->date=buf;
 }
 
 
@@ -117,20 +117,19 @@ istream& operator>>(istream &is, CTWRaw &raw)
     } else {
         iss.str(string(buf.get(), length));
     }
-    CHttpReply &reply = raw.reply;
-    if (!(iss>>reply.status))
+    if (!(iss>>raw.reply.status))
     {
         is.setstate(std::ios::failbit);
         return is;
     }
     CHeader header;
-    reply.headers.clear();
+    raw.reply.headers.clear();
     while (iss>>header)
-        reply.headers.push_back(header);
+        raw.reply.headers.push_back(header);
     iss.clear();
     ostringstream oss;
     oss<<iss.rdbuf();
-    reply.body = oss.str();
+    raw.reply.body = oss.str();
     return is;
 }
 

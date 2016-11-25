@@ -14,9 +14,9 @@ help(ostream &os)
 {
     os<<"Tool for reading CTW_Raw pages and output them.\n"
       "\tUsage: cmd [--prefix=...]* [--select=...] [--from=...] [--num=...] \n"
-      "\t\t  [--one-by-one | --package] [--to-code=...]\n"
-      "\t\t  [--http-reply | --body-only] [-h|--help]\n"
-      "\t\t--prefix= : select urls with such prefix.\n"
+      "\t\t  [--one-by-one] [--to-code=...]\n"
+      "\t\t  [--http-reply | --body-only | --make-index --fn=] [-h|--help]\n"
+      "\t\t--prefix= : select urls with curtain prefix.\n"
       "\t\t--select= : filename of selected url.\n"
       "\t\t--from= : skip the first ? pages.\n"
       "\t\t--num= : output num pages at most.\n"
@@ -24,9 +24,10 @@ help(ostream &os)
       "\t\t--one-by-one : Write output to seperated files with names:\n"
       "\t\t\t\t \"1.\", \"2.\", \"3.\", ...\n"
       "\t\t\t\t extention will be raw, html, or reply\n"
-      "\t\t--package : output record in package:\"http-length\\n http-body\\n\"\n"
       "\t\t--http-reply : output is in http-reply format, tw_raw headers are discarded.\n"
       "\t\t--body-only : only http body is output.\n"
+      "\t\t--make-index : output url, date, filename, and offset of pages.\n"
+      "\t\t--fn : filename of raw pages.\n"
       "\t\t-h|--help : print this message.\n"
       "\t\tcin : CTWRaw pages.\n"
       "\t\tcout : output if \"--one-by-one\" option is not set.\n"
@@ -70,18 +71,31 @@ main(int argc, char* argv[])
     bool oneByOne = arg.found("--one-by-one");
     bool body_only = arg.found("--body-only");
     bool http_reply = arg.found("--http-reply");
-    bool package = arg.found("--package");
-    if (package && oneByOne)
+    bool make_index = arg.found("--make-index");
+    if (make_index)
     {
-        cerr<<"options \"--one-by-one\", \"--package\" is conflict with each other"
-          <<endl;
-        return -1;
+        string filename;
+        ifstream rawfile;
+        if (arg.findLast("--fn=", filename))
+            rawfile.open(filename);
+        if (!rawfile.is_open())
+        {
+            cerr<<"Can not open twr file: "<<filename<<" to index."<<endl;
+            return -1;
+        }
+        CTWRaw raw;
+        for (unsigned pos = rawfile.tellg(); rawfile>>raw; pos = rawfile.tellg())
+        {
+            cout<<"url: "<<raw.url<<endl;
+            cout<<"date: "<<raw.date<<endl;
+            cout<<"pos: "<<filename<<'#'<<pos<<endl;
+        }
     }
     for (unsigned nloop=0, count=0; count<num;  nloop++)
     {
         CTWRaw raw;
         if (!(cin>>raw))
-		break;
+            break;
         if (nloop < from)
             continue;
         if (prefixes.size() > 0 || selects.size() > 0)
@@ -120,22 +134,6 @@ main(int argc, char* argv[])
             else
                 ofs.open((to_string(count)+".raw").c_str());
                os.rdbuf(ofs.rdbuf());
-        }
-        if (package)
-        {
-            if (body_only)
-            {
-                os<<raw.reply.body.length()<<'\n'
-                   <<raw.reply.body<<endl;
-                continue;
-            }
-            ostringstream oss;
-            if (http_reply)
-                oss<<raw.reply;
-            else
-                oss<<raw;
-            os<<oss.str().length()<<'\n'<<oss.str()<<endl;
-            continue;
         }
         if (body_only)
             os<<raw.reply.body<<endl;
